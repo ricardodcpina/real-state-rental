@@ -1,12 +1,44 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
 const models = require('../models')
 const errors = require('../errors')
 const config = require('../config')
-const jwt = require('jsonwebtoken')
+
+exports.createUser = async (username, email, password) => {
+
+    // Validate fields
+    if (!username || username.trim() === "") {
+        throw errors.usernameRequired
+    }
+
+    if (!password || password.trim() === "") {
+        throw errors.passwordRequired
+    }
+
+    if (!email || email.trim() === "") {
+        throw errors.emailRequired
+    }
+
+    const emailExists = await findByEmail(email)
+
+    if (emailExists) throw errors.emailIsUnique
+
+    // Apply encryption 
+    const cryptedPassword = await hashPassword(password)
+
+    // Save user on db
+    const input = { username, email, password: cryptedPassword }
+
+    const user = await models.User.create(input)
+
+    return user
+}
 
 exports.authUser = async (username, password) => {
 
+    // Validate fields
     if (!username || username.trim() === "") {
         throw errors.usernameRequired
     }
@@ -19,6 +51,7 @@ exports.authUser = async (username, password) => {
 
     if (!user || user.deletedAt) throw errors.invalidCredentials
 
+    // Apply encryption and check authenticity
     if (await hashPassword(password) !== user.password) {
         throw errors.invalidCredentials
     }
@@ -28,37 +61,13 @@ exports.authUser = async (username, password) => {
     return { authenticated: true, token }
 }
 
-exports.createUser = async (username, email, password) => {
-
-    if (!username || username.trim() === "") {
-        throw errors.usernameRequired
-    }
-
-    if (!email || email.trim() === "") {
-        throw errors.emailRequired
-    }
-
-    if (!password || password.trim() === "") {
-        throw errors.passwordRequired
-    }
-
-    const emailExists = await findByEmail(email)
-
-    if (emailExists) throw errors.emailIsUnique
-
-    const cryptedPassword = await hashPassword(password)
-
-    const newUser = new models.User({ username, email, password: cryptedPassword })
-
-    return await newUser.save()
-}
-
 exports.listUsers = async () => {
     return await models.User.find({ deletedAt: null })
 }
 
 exports.findUser = async (id) => {
 
+    // Check ID validity
     if (!mongoose.isValidObjectId(id)) {
         throw errors.invalidID
     }
@@ -74,6 +83,7 @@ exports.findUser = async (id) => {
 
 exports.updateUser = async (id, input) => {
 
+    // Check ID validity
     if (!mongoose.isValidObjectId(id)) {
         throw errors.invalidID
     }
@@ -82,10 +92,33 @@ exports.updateUser = async (id, input) => {
 
     if (!user || user.deletedAt !== undefined) throw errors.invalidID
 
-    const emailExists = await findByEmail(input.email)
+    // Validate fields
+    if (!input.username || input.username.trim() === "") {
+        throw errors.usernameRequired
+    }
 
-    if (emailExists) throw errors.emailIsUnique
+    if (!input.password || input.password.trim() === "") {
+        throw errors.passwordRequired
+    }
 
+    if (!input.email || input.email.trim() === "") {
+        throw errors.emailRequired
+    }
+
+    // Check email uniqueness only when comparing to other users
+    if (input.email !== user.email) {
+
+        const emailExists = await findByEmail(input.email)
+
+        if (emailExists) throw errors.emailIsUnique
+    }
+
+    // Apply encryption to new password
+    if (input.password) {
+        input.password = await hashPassword(input.password)
+    }
+
+    // Update user data
     const updatedUser = await models.User.findByIdAndUpdate(
         { _id: id }, { ...input }, { new: true })
 
@@ -94,6 +127,7 @@ exports.updateUser = async (id, input) => {
 
 exports.softDeleteUser = async (id) => {
 
+    // Check ID validity
     if (!mongoose.isValidObjectId(id)) {
         throw errors.invalidID
     }
@@ -102,10 +136,15 @@ exports.softDeleteUser = async (id) => {
 
     if (!user || user.deletedAt !== undefined) throw errors.invalidID
 
+    // Add deletedAt field to user
     const updatedUser = await models.User.findByIdAndUpdate(
         { _id: id }, { deletedAt: Date.now() }, { new: true })
 
     return updatedUser
+}
+
+exports.hardDeleteUser = async (email) => {
+    await models.User.deleteOne({ email })
 }
 
 exports.generateSALT = async () => {
@@ -114,7 +153,11 @@ exports.generateSALT = async () => {
     return SALT
 }
 
-/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+const validateFields = () => {
+
+}
 
 const findByEmail = async (email) => {
     const user = await models.User.findOne({

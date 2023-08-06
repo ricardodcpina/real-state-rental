@@ -7,5 +7,5 @@ const UserSchema = new mongoose.Schema({
     deletedAt: Date
 })
 
-exports.User = new mongoose.model('User', UserSchema)
+exports.User = mongoose.model('User', UserSchema)
 

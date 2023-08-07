@@ -56,22 +56,24 @@ describe("findUser", () => {
 
         describe("when the ID exists but user has been soft deleted", () => {
             it("returns an error", async () => {
+                let user
 
                 mockFindById.mockResolvedValue({
                     _id: "64b884dbbfe2d03f39137e24",
                     username: "testuser",
                     email: "testemail",
                     password: "testpass",
-                    deletedAt: "testtime"
+                    deletedAt: "testdelete"
                 })
 
                 try {
-                    await userService.findUser("64b884dbbfe2d03f39137e24")
+                    user = await userService.findUser("64b884dbbfe2d03f39137e24")
                 }
                 catch (err) {
                     expect(err.message).toBe("Invalid ID")
                 }
                 finally {
+                    expect(user).toBeUndefined()
                     expect(mockFindById).toHaveBeenCalledWith({
                         _id: "64b884dbbfe2d03f39137e24"
                     })

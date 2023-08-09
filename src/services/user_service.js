@@ -44,12 +44,14 @@ exports.authUser = async (username, password) => {
     }
 
     if (!password || password.trim() === "") {
-        throw errors.errors
+        throw errors.passwordRequired
     }
 
     const user = await models.User.findOne({ username })
 
-    if (!user || user.deletedAt) throw errors.invalidCredentials
+    if (!user || user.deletedAt !== undefined) {
+        throw errors.invalidCredentials
+    }
 
     // Apply encryption and check authenticity
     if (await hashPassword(password) !== user.password) {
@@ -76,7 +78,9 @@ exports.findUser = async (id) => {
         _id: id
     })
 
-    if (!user || user.deletedAt !== undefined) throw errors.invalidID
+    if (!user || user.deletedAt !== undefined) {
+        throw errors.invalidID
+    }
 
     return user
 }
@@ -114,9 +118,7 @@ exports.updateUser = async (id, input) => {
     }
 
     // Apply encryption to new password
-    if (input.password) {
-        input.password = await hashPassword(input.password)
-    }
+    input.password = await hashPassword(input.password)
 
     // Update user data
     const updatedUser = await models.User.findByIdAndUpdate(
@@ -134,7 +136,9 @@ exports.softDeleteUser = async (id) => {
 
     const user = await models.User.findById({ _id: id })
 
-    if (!user || user.deletedAt !== undefined) throw errors.invalidID
+    if (!user || user.deletedAt !== undefined) {
+        throw errors.invalidID
+    }
 
     // Add deletedAt field to user
     const updatedUser = await models.User.findByIdAndUpdate(
@@ -154,10 +158,6 @@ exports.generateSALT = async () => {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-
-const validateFields = () => {
-
-}
 
 const findByEmail = async (email) => {
     const user = await models.User.findOne({

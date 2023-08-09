@@ -14,15 +14,19 @@ const userService = require('../src/services/user_service')
 
 describe("createUser", () => {
     describe("when the validation is successfull", () => {
-
         it("creates an user", async () => {
             const mockUser = jest.fn()
 
             mockCreate.mockResolvedValue(mockUser)
+            mockFind.mockResolvedValue(null)
 
-            const user = await userService.createUser("testuser", "testemail", "testpass")
+            const user = userService.createUser("testuser", "testemail", "testpass")
 
-            expect(user).toBe(mockUser)
+            await expect(user).resolves.toBe(mockUser)
+            expect(mockFind).toHaveBeenCalledWith({
+                email: "testemail",
+                deletedAt: { $exists: false }
+            })
             expect(mockCreate).toHaveBeenCalledWith({
                 username: "testuser",
                 email: "testemail",
@@ -35,69 +39,65 @@ describe("createUser", () => {
 
         // Invalid username
         describe("when the username is undefined", () => {
-            it("returns an error", () => {
+            it("returns an error", async () => {
                 const user = userService.createUser(undefined, "testemail", "testpassword")
 
-                user.catch(err => expect(err.message).toBe("Username is required"))
+                await expect(user).rejects.toThrow('Username is required')
             })
         })
         describe("when the username is blank", () => {
-            it("returns an error", () => {
+            it("returns an error", async () => {
                 const user = userService.createUser("   ", "testemail", "testpassword")
 
-                user.catch(err => expect(err.message).toBe("Username is required"))
+                await expect(user).rejects.toThrow('Username is required')
             })
         })
 
         // Invalid password
         describe("when the password is undefined", () => {
-            it("returns an error", () => {
+            it("returns an error", async () => {
                 const user = userService.createUser("testuser", "testemail", undefined)
 
-                user.catch(err => expect(err.message).toBe("Password is required"))
+                await expect(user).rejects.toThrow('Password is required')
             })
         })
         describe("when the password is blank", () => {
-            it("returns an error", () => {
+            it("returns an error", async () => {
                 const user = userService.createUser("testuser", "testemail", "   ")
 
-                user.catch(err => expect(err.message).toBe("Password is required"))
+                await expect(user).rejects.toThrow('Password is required')
             })
         })
 
         // Invalid email
         describe("when the email is undefined", () => {
-            it("returns an error", () => {
+            it("returns an error", async () => {
                 const user = userService.createUser("testuser", undefined, "testpassword")
 
-                user.catch(err => expect(err.message).toBe("Email is required"))
+                await expect(user).rejects.toThrow('Email is required')
             })
         })
         describe("when the email is blank", () => {
-            it("returns an error", () => {
+            it("returns an error", async () => {
                 const user = userService.createUser("testuser", "   ", "testpassword")
 
-                user.catch(err => expect(err.message).toBe("Email is required"))
+                await expect(user).rejects.toThrow('Email is required')
             })
         })
         describe("when the email is not unique", () => {
             it("returns an error", async () => {
+                const mockUser = jest.fn()
 
-                mockFind.mockRejectedValue("Email not available")
+                mockFind.mockResolvedValue(mockUser)
 
-                try {
-                    await userService.createUser(
-                        "testuser",
-                        "testemail",
-                        "testpass")
-                } catch (err) {
-                    expect(err).toBe("Email not available")
-                } finally {
-                    expect(mockFind).toHaveBeenCalledWith({
-                        email: "testemail",
-                        deletedAt: { $exists: false }
-                    })
-                }
+                const user = userService.createUser("testuser", "testemail", "testpass")
+
+                await expect(user).rejects.toThrow('Email not available')
+
+                expect(mockFind).toHaveBeenCalledWith({
+                    email: "testemail",
+                    deletedAt: { $exists: false }
+                })
             })
         })
     })

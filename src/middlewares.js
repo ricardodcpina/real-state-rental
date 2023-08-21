@@ -21,6 +21,7 @@ exports.authentication = (req, res, next) => {
             return res.json(authError)
         }
 
+        req.userId = payload.sub
         next()
     })
 }

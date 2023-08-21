@@ -157,7 +157,8 @@ exports.generateSALT = async () => {
     return SALT
 }
 
-/////////////////////////////////////////////////////////////////////////////
+/////////////////////  Auxiliary Functions  /////////////////////////////
+
 
 const findByEmail = async (email) => {
     const user = await models.User.findOne({

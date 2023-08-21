@@ -15,7 +15,7 @@ const mockJWT = {
 jest.mock('../src/models', () => mockModels)
 jest.mock('jsonwebtoken', () => mockJWT)
 
-const userService = require('../src/services/user_service')
+const userService = require('../../src/services/user_service')
 
 describe("when the validation is successfull", () => {
     it("returns token for authorized user", async () => {

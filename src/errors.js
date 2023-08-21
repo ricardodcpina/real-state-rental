@@ -5,4 +5,7 @@ module.exports = {
     emailIsUnique: new Error('Email not available'),
     invalidCredentials: new Error('Invalid credentials'),
     invalidID: new Error('Invalid ID'),
+    unauthorized: new Error('Unauthorized operation'),
+    reserveNotAllowed: new Error('Reserve not allowed'),
+    houseNotAvailable: new Error('House is not available')
 }

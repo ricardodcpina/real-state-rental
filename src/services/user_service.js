@@ -1,36 +1,25 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
+const { isValidObjectId } = require('mongoose')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 const models = require('../models')
-const errors = require('../errors')
-const config = require('../config')
+const config = require('../config') // Create env variables!
+
+const invalidID = { message: 'Invalid ID', statusCode: 400 }
 
 exports.createUser = async (username, email, password) => {
 
-    // Validate fields
-    if (!username || username.trim() === "") {
-        throw errors.usernameRequired
-    }
+    // Validate input fields
+    validateFields({ username, email, password })
 
-    if (!password || password.trim() === "") {
-        throw errors.passwordRequired
-    }
+    // Checks email formatting and availability
+    await verifyEmail(email)
 
-    if (!email || email.trim() === "") {
-        throw errors.emailRequired
-    }
-
-    const emailExists = await findByEmail(email)
-
-    if (emailExists) throw errors.emailIsUnique
-
-    // Apply encryption 
+    // Apply encryption to password
     const cryptedPassword = await hashPassword(password)
 
-    // Save user on db
+    // Save user on database
     const input = { username, email, password: cryptedPassword }
-
     const user = await models.User.create(input)
 
     return user
@@ -38,117 +27,103 @@ exports.createUser = async (username, email, password) => {
 
 exports.authUser = async (username, password) => {
 
-    // Validate fields
-    if (!username || username.trim() === "") {
-        throw errors.usernameRequired
+    const invalidCredentials = {
+        message: 'Invalid credentials', statusCode: 401
     }
 
-    if (!password || password.trim() === "") {
-        throw errors.passwordRequired
-    }
+    // Validate input fields
+    validateFields({ username, password })
 
-    const user = await models.User.findOne({ username })
+    // Checks username existence
 
-    if (!user || user.deletedAt !== undefined) {
-        throw errors.invalidCredentials
-    }
+    const user = await models.User.findOne({
+        username,
+        deletedAt: { $exists: false }
+    })
+
+    if (!user) throw invalidCredentials
 
     // Apply encryption and check authenticity
     if (await hashPassword(password) !== user.password) {
-        throw errors.invalidCredentials
+        throw invalidCredentials
     }
 
+    // Authenticate
     const token = generateToken(user._id)
 
     return { authenticated: true, token }
 }
 
-exports.listUsers = async () => {
-    return await models.User.find({ deletedAt: null })
-}
-
-exports.findUser = async (id) => {
-
-    // Check ID validity
-    if (!mongoose.isValidObjectId(id)) {
-        throw errors.invalidID
-    }
-
-    const user = await models.User.findById({
-        _id: id
-    })
-
-    if (!user || user.deletedAt !== undefined) {
-        throw errors.invalidID
-    }
-
-    return user
-}
-
 exports.updateUser = async (id, input) => {
 
-    // Check ID validity
-    if (!mongoose.isValidObjectId(id)) {
-        throw errors.invalidID
+    // Checks Object ID validity
+    if (!isValidObjectId(id)) throw invalidID
+
+    // Checks for user ID
+    const user = await models.User.findOne({
+        _id: id,
+        deletedAt: { $exists: false }
+    })
+    if (!user) throw invalidID
+
+    // Validate provided fields
+    validateFields(input)
+
+    // If provided, check email uniqueness only when comparing to other users
+    if (input.email && (input.email !== user.email)) {
+        await verifyEmail(input.email)
     }
 
-    const user = await models.User.findById({ _id: id })
-
-    if (!user || user.deletedAt !== undefined) throw errors.invalidID
-
-    // Validate fields
-    if (!input.username || input.username.trim() === "") {
-        throw errors.usernameRequired
+    // Apply encryption to new password if provided
+    if (input.password) {
+        input.password = await hashPassword(input.password)
     }
 
-    if (!input.password || input.password.trim() === "") {
-        throw errors.passwordRequired
-    }
-
-    if (!input.email || input.email.trim() === "") {
-        throw errors.emailRequired
-    }
-
-    // Check email uniqueness only when comparing to other users
-    if (input.email !== user.email) {
-
-        const emailExists = await findByEmail(input.email)
-
-        if (emailExists) throw errors.emailIsUnique
-    }
-
-    // Apply encryption to new password
-    input.password = await hashPassword(input.password)
-
-    // Update user data
+    // Update user data on database
     const updatedUser = await models.User.findByIdAndUpdate(
         { _id: id }, { ...input }, { new: true })
 
     return updatedUser
 }
 
+exports.findUser = async (id) => {
+
+    // Check ID validity
+    if (!isValidObjectId(id)) throw invalidID
+
+    // Checks for user ID
+    const user = await models.User.findOne({
+        _id: id,
+        deletedAt: { $exists: false }
+    })
+
+    if (!user) throw invalidID
+
+    return user
+}
+
+exports.listUsers = async () => {
+    return await models.User.find({ deletedAt: null })
+}
+
 exports.softDeleteUser = async (id) => {
 
     // Check ID validity
-    if (!mongoose.isValidObjectId(id)) {
-        throw errors.invalidID
-    }
+    if (!isValidObjectId(id)) throw invalidID
 
-    const user = await models.User.findById({ _id: id })
+    // Checks for user ID
+    const user = await models.User.findOne({
+        _id: id,
+        deletedAt: { $exists: false }
+    })
 
-    if (!user || user.deletedAt !== undefined) {
-        throw errors.invalidID
-    }
+    if (!user) throw invalidID
 
     // Add deletedAt field to user
     const updatedUser = await models.User.findByIdAndUpdate(
         { _id: id }, { deletedAt: Date.now() }, { new: true })
 
     return updatedUser
-}
-
-exports.hardDeleteUser = async (email) => {
-    await models.User.deleteOne({ email })
 }
 
 exports.generateSALT = async () => {
@@ -159,14 +134,47 @@ exports.generateSALT = async () => {
 
 /////////////////////  Auxiliary Functions  /////////////////////////////
 
+const validateFields = (input) => {
 
-const findByEmail = async (email) => {
+    // Check for undefined and blank fields
+    for (let field in input) {
+        let fieldValue = input[field]
+
+        if (!fieldValue || fieldValue.trim() === '') {
+            throw {
+                message: `${field.toUpperCase()} is required`,
+                statusCode: 400
+            }
+        }
+    }
+
+    return true
+}
+
+const verifyEmail = async (email) => {
+
+    // Check email is unique
     const user = await models.User.findOne({
         email,
         deletedAt: { $exists: false }
     })
 
-    return user
+    if (user) throw {
+        message: 'EMAIL not available',
+        statusCode: 409
+    }
+
+    // Check email for correct formatting
+    let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+
+    if (!regex.test(email)) {
+        throw {
+            message: 'EMAIL format not valid',
+            statusCode: 400
+        }
+    }
+
+    return true
 }
 
 const hashPassword = async (password) => {
@@ -174,5 +182,7 @@ const hashPassword = async (password) => {
 }
 
 const generateToken = (userId) => {
-    return jwt.sign({ sub: userId }, config.JWT_SECRET, { expiresIn: '300s' })
+    return jwt.sign({ sub: userId }, config.JWT_SECRET, { expiresIn: '600s' })
 }
+
+

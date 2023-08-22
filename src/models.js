@@ -1,36 +1,36 @@
-const mongoose = require('mongoose')
+const { Schema, model } = require('mongoose')
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
     username: String,
     email: String,
     password: String,
     deletedAt: Date
 })
 
-exports.User = mongoose.model('User', UserSchema)
+exports.User = model('User', UserSchema)
 
-const HouseSchema = new mongoose.Schema({
+const HouseSchema = new Schema({
     description: String,
     price: Number,
     available: Boolean,
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     }
 })
 
-exports.House = mongoose.model('House', HouseSchema)
+exports.House = model('House', HouseSchema)
 
-const ReserveSchema = new mongoose.Schema({
+const ReserveSchema = new Schema({
     date: String,
     user: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "User"
     },
     house: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "House"
     }
 })
 
-exports.Reserve = mongoose.model("Reserve", ReserveSchema)
+exports.Reserve = model("Reserve", ReserveSchema)

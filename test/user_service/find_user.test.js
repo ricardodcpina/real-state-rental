@@ -1,29 +1,28 @@
-// ALL TESTS HAVE BEEN CHECKED
-
-const mockFindById = jest.fn()
+const mockFind = jest.fn()
 
 const mockModels = {
     User: {
-        findById: mockFindById
+        findOne: mockFind
     }
 }
 
-jest.mock('../src/models', () => mockModels)
+jest.mock('../../src/models', () => mockModels)
 
-const userService = require('../src/services/user_service')
+const userService = require('../../src/services/user_service')
 
 describe("findUser", () => {
     describe("when validations are successfull", () => {
         it("returns the specified user", async () => {
             const mockUser = jest.fn()
 
-            mockFindById.mockResolvedValue(mockUser)
+            mockFind.mockResolvedValue(mockUser)
 
             const user = userService.findUser("64b884dbbfe1d03e39137e24")
 
             await expect(user).resolves.toBe(mockUser)
-            expect(mockFindById).toHaveBeenCalledWith({
-                _id: "64b884dbbfe1d03e39137e24"
+            expect(mockFind).toHaveBeenCalledWith({
+                _id: "64b884dbbfe1d03e39137e24",
+                deletedAt: { $exists: false }
             })
         })
     })
@@ -34,39 +33,24 @@ describe("findUser", () => {
             it("returns an error", async () => {
                 const user = userService.findUser("4846541") // Invalid ObjectID
 
-                await expect(user).rejects.toThrow('Invalid ID')
+                await expect(user).rejects.toEqual(
+                    { "message": "Invalid ID", "statusCode": 400 })
             })
         })
 
-        describe("when the given ID does not match any user", () => {
+        describe("when the given ID does not match any user or softDeleted", () => {
             it("returns an error", async () => {
 
-                mockFindById.mockResolvedValue(null)
+                mockFind.mockResolvedValue(null)
 
                 const user = userService.findUser("64b884dbbfe2d03f39137e24") // Valid ObjectID
 
-                await expect(user).rejects.toThrow('Invalid ID')
+                await expect(user).rejects.toEqual(
+                    { "message": "Invalid ID", "statusCode": 400 })
 
-                expect(mockFindById).toHaveBeenCalledWith({
-                    _id: "64b884dbbfe2d03f39137e24"
-                })
-
-            })
-        })
-
-        describe("when the ID exists but user has been soft deleted", () => {
-            it("returns an error", async () => {
-
-                mockFindById.mockResolvedValue({
-                    deletedAt: "definedDeletedAt"
-                })
-
-                const user = userService.findUser("64b884dbbfe2d03f39137e24") // Valid ObjectID
-
-                await expect(user).rejects.toThrow('Invalid ID')
-
-                expect(mockFindById).toHaveBeenCalledWith({
-                    _id: "64b884dbbfe2d03f39137e24"
+                expect(mockFind).toHaveBeenCalledWith({
+                    _id: "64b884dbbfe2d03f39137e24",
+                    deletedAt: { $exists: false }
                 })
 
             })

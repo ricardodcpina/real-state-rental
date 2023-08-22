@@ -8,9 +8,9 @@ const mockModels = {
     }
 }
 
-jest.mock('../src/models', () => mockModels)
+jest.mock('../../src/models', () => mockModels)
 
-const userService = require('../src/services/user_service')
+const userService = require('../../src/services/user_service')
 
 describe("createUser", () => {
     describe("when the validation is successfull", () => {
@@ -20,16 +20,16 @@ describe("createUser", () => {
             mockCreate.mockResolvedValue(mockUser)
             mockFind.mockResolvedValue(null)
 
-            const user = userService.createUser("testuser", "testemail", "testpass")
+            const user = userService.createUser("testuser", "test@email.com", "testpass")
 
             await expect(user).resolves.toBe(mockUser)
             expect(mockFind).toHaveBeenCalledWith({
-                email: "testemail",
+                email: "test@email.com",
                 deletedAt: { $exists: false }
             })
             expect(mockCreate).toHaveBeenCalledWith({
                 username: "testuser",
-                email: "testemail",
+                email: "test@email.com",
                 password: "$2b$10$4K8VYfIHxZEatcUCWaklJORNamNV16GgE6wYLa9EjWonGwRPiExa."
             })
         })
@@ -42,14 +42,17 @@ describe("createUser", () => {
             it("returns an error", async () => {
                 const user = userService.createUser(undefined, "testemail", "testpassword")
 
-                await expect(user).rejects.toThrow('Username is required')
+                await expect(user).rejects.toEqual(
+                    { "message": "USERNAME is required", "statusCode": 400 })
             })
         })
+
         describe("when the username is blank", () => {
             it("returns an error", async () => {
                 const user = userService.createUser("   ", "testemail", "testpassword")
 
-                await expect(user).rejects.toThrow('Username is required')
+                await expect(user).rejects.toEqual(
+                    { "message": "USERNAME is required", "statusCode": 400 })
             })
         })
 
@@ -58,14 +61,16 @@ describe("createUser", () => {
             it("returns an error", async () => {
                 const user = userService.createUser("testuser", "testemail", undefined)
 
-                await expect(user).rejects.toThrow('Password is required')
+                await expect(user).rejects.toEqual(
+                    { "message": "PASSWORD is required", "statusCode": 400 })
             })
         })
         describe("when the password is blank", () => {
             it("returns an error", async () => {
                 const user = userService.createUser("testuser", "testemail", "   ")
 
-                await expect(user).rejects.toThrow('Password is required')
+                await expect(user).rejects.toEqual(
+                    { "message": "PASSWORD is required", "statusCode": 400 })
             })
         })
 
@@ -74,14 +79,16 @@ describe("createUser", () => {
             it("returns an error", async () => {
                 const user = userService.createUser("testuser", undefined, "testpassword")
 
-                await expect(user).rejects.toThrow('Email is required')
+                await expect(user).rejects.toEqual(
+                    { "message": "EMAIL is required", "statusCode": 400 })
             })
         })
         describe("when the email is blank", () => {
             it("returns an error", async () => {
                 const user = userService.createUser("testuser", "   ", "testpassword")
 
-                await expect(user).rejects.toThrow('Email is required')
+                await expect(user).rejects.toEqual(
+                    { "message": "EMAIL is required", "statusCode": 400 })
             })
         })
         describe("when the email is not unique", () => {
@@ -92,7 +99,8 @@ describe("createUser", () => {
 
                 const user = userService.createUser("testuser", "testemail", "testpass")
 
-                await expect(user).rejects.toThrow('Email not available')
+                await expect(user).rejects.toEqual(
+                    { "message": "EMAIL not available", "statusCode": 409 })
 
                 expect(mockFind).toHaveBeenCalledWith({
                     email: "testemail",

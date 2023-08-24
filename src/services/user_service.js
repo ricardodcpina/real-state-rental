@@ -3,13 +3,59 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
 const models = require('../models')
+const errors = require('../errors')
 const config = require('../config') // Create env variables!
 
-const invalidID = { message: 'Invalid ID', statusCode: 400 }
+////////////////////////  Auxiliary Functions  /////////////////////////
+
+const validateFields = (input) => {
+
+    // Check for undefined and blank fields
+    for (let field in input) {
+
+        let fieldValue = String(input[field])
+        if (!fieldValue || fieldValue.trim() === '') {
+            throw {
+                message: `${field.toUpperCase()} is required`,
+                statusCode: 400
+            }
+        }
+    }
+
+    return true
+}
+
+const verifyEmail = async (email) => {
+
+    // Check email is unique
+    const user = await models.User.findOne({
+        email,
+        deletedAt: { $exists: false }
+    })
+
+    if (user) throw errors.emailNotUnique
+
+    // Check email for correct formatting
+    let regex = RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+
+    if (!regex.test(email)) throw errors.emailnotFormatted
+
+    return true
+}
+
+const hashPassword = async (password) => {
+    return await bcrypt.hash(password, config.SALT)
+}
+
+const generateToken = (userId) => {
+    return jwt.sign({ sub: userId }, config.JWT_SECRET, { expiresIn: '600s' })
+}
+
+////////////////////////  Main Functions  //////////////////////////////
 
 exports.createUser = async (username, email, password) => {
 
-    // Validate input fields
+    // Validate required fields
     validateFields({ username, email, password })
 
     // Checks email formatting and availability
@@ -27,10 +73,6 @@ exports.createUser = async (username, email, password) => {
 
 exports.authUser = async (username, password) => {
 
-    const invalidCredentials = {
-        message: 'Invalid credentials', statusCode: 401
-    }
-
     // Validate input fields
     validateFields({ username, password })
 
@@ -41,12 +83,11 @@ exports.authUser = async (username, password) => {
         deletedAt: { $exists: false }
     })
 
-    if (!user) throw invalidCredentials
+    if (!user) throw errors.notAuthenticated
 
     // Apply encryption and check authenticity
-    if (await hashPassword(password) !== user.password) {
-        throw invalidCredentials
-    }
+    if (await hashPassword(password) !== user.password)
+        throw errors.notAuthenticated
 
     // Authenticate
     const token = generateToken(user._id)
@@ -57,14 +98,14 @@ exports.authUser = async (username, password) => {
 exports.updateUser = async (id, input) => {
 
     // Checks Object ID validity
-    if (!isValidObjectId(id)) throw invalidID
+    if (!isValidObjectId(id)) throw errors.invalidID
 
     // Checks for user ID
     const user = await models.User.findOne({
         _id: id,
         deletedAt: { $exists: false }
     })
-    if (!user) throw invalidID
+    if (!user) throw errors.invalidID
 
     // Validate provided fields
     validateFields(input)
@@ -89,7 +130,7 @@ exports.updateUser = async (id, input) => {
 exports.findUser = async (id) => {
 
     // Check ID validity
-    if (!isValidObjectId(id)) throw invalidID
+    if (!isValidObjectId(id)) throw errors.invalidID
 
     // Checks for user ID
     const user = await models.User.findOne({
@@ -97,7 +138,7 @@ exports.findUser = async (id) => {
         deletedAt: { $exists: false }
     })
 
-    if (!user) throw invalidID
+    if (!user) throw errors.invalidID
 
     return user
 }
@@ -109,7 +150,7 @@ exports.listUsers = async () => {
 exports.softDeleteUser = async (id) => {
 
     // Check ID validity
-    if (!isValidObjectId(id)) throw invalidID
+    if (!isValidObjectId(id)) throw errors.invalidID
 
     // Checks for user ID
     const user = await models.User.findOne({
@@ -117,7 +158,7 @@ exports.softDeleteUser = async (id) => {
         deletedAt: { $exists: false }
     })
 
-    if (!user) throw invalidID
+    if (!user) throw errors.invalidID
 
     // Add deletedAt field to user
     const updatedUser = await models.User.findByIdAndUpdate(
@@ -132,57 +173,7 @@ exports.generateSALT = async () => {
     return SALT
 }
 
-/////////////////////  Auxiliary Functions  /////////////////////////////
+exports.validateFields = validateFields
 
-const validateFields = (input) => {
-
-    // Check for undefined and blank fields
-    for (let field in input) {
-        let fieldValue = input[field]
-
-        if (!fieldValue || fieldValue.trim() === '') {
-            throw {
-                message: `${field.toUpperCase()} is required`,
-                statusCode: 400
-            }
-        }
-    }
-
-    return true
-}
-
-const verifyEmail = async (email) => {
-
-    // Check email is unique
-    const user = await models.User.findOne({
-        email,
-        deletedAt: { $exists: false }
-    })
-
-    if (user) throw {
-        message: 'EMAIL not available',
-        statusCode: 409
-    }
-
-    // Check email for correct formatting
-    let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
-
-    if (!regex.test(email)) {
-        throw {
-            message: 'EMAIL format not valid',
-            statusCode: 400
-        }
-    }
-
-    return true
-}
-
-const hashPassword = async (password) => {
-    return await bcrypt.hash(password, config.SALT)
-}
-
-const generateToken = (userId) => {
-    return jwt.sign({ sub: userId }, config.JWT_SECRET, { expiresIn: '600s' })
-}
-
+exports.verifyEmail = verifyEmail
 

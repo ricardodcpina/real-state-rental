@@ -7,9 +7,15 @@ const { authentication } = require('../middlewares')
 router.get('/', authentication, async (req, res) => {
     const { userId } = req
 
-    const houses = await dashboardService.listMyHouses(userId)
+    try {
+        const houses = await dashboardService.listMyHouses(userId)
 
-    res.status(200).json(houses)
+        res.status(200).json(houses)
+    }
+    catch (err) {
+        if (!err.statusCode) err.statusCode = 500
+        res.status(err.statusCode).json({ error: err.message })
+    }
 })
 
 module.exports = router

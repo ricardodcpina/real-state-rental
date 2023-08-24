@@ -15,7 +15,8 @@ router.post('/', authentication, async (req, res) => {
         res.status(201).json(house)
     }
     catch (err) {
-        res.status(400).json({ error: err.message })
+        if (!err.statusCode) err.statusCode = 500
+        res.status(err.statusCode).json({ error: err.message })
     }
 })
 
@@ -27,7 +28,8 @@ router.get('/', authentication, async (req, res) => {
         res.status(200).json(houses)
     }
     catch (err) {
-        res.status(400).json({ error: err.message })
+        if (!err.statusCode) err.statusCode = 500
+        res.status(err.statusCode).json({ error: err.message })
     }
 })
 
@@ -41,7 +43,8 @@ router.put('/:id', authentication, async (req, res) => {
 
         res.status(200).json(house)
     } catch (err) {
-        res.status(400).json({ error: err.message })
+        if (!err.statusCode) err.statusCode = 500
+        res.status(err.statusCode).json({ error: err.message })
     }
 })
 
@@ -54,7 +57,7 @@ router.delete('/:id', authentication, async (req, res) => {
 
         res.status(200).json(house)
     } catch (err) {
-        res.status(400).json({ error: err.message })
+        res.status(err.statusCode).json({ error: err.message })
     }
 })
 

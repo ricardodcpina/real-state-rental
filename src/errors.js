@@ -1,11 +1,8 @@
-module.exports = {
-    usernameRequired: new Error('Username is required'),
-    emailRequired: new Error('Email is required'),
-    passwordRequired: new Error('Password is required'),
-    emailIsUnique: new Error('Email not available'),
-    invalidCredentials: new Error('Invalid credentials'),
-    invalidID: new Error('Invalid ID'),
-    unauthorized: new Error('Unauthorized operation'),
-    reserveNotAllowed: new Error('Reserve not allowed'),
-    houseNotAvailable: new Error('House is not available')
-}
+// "{$field} is required" error inside validateFields function
+
+exports.emailnotFormatted = { message: 'EMAIL format not valid', statusCode: 400 }
+exports.emailNotUnique = { message: 'EMAIL not available', statusCode: 409 }
+exports.notAuthenticated = { message: 'Invalid credentials', statusCode: 401 }
+exports.notAllowed = { message: 'Forbidden request', statusCode: 403 }
+exports.invalidID = { message: 'Invalid ID', statusCode: 400 }
+exports.notFound = { message: "Resource not found", statusCode: 404 }

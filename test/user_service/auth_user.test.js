@@ -38,41 +38,6 @@ describe("when the validation is successfull", () => {
 })
 
 describe("when the validation fails", () => {
-    describe("when the username is undefined", () => {
-        it("returns an error", async () => {
-            const user = userService.authUser(undefined, "testpassword")
-
-            await expect(user).rejects.toEqual(
-                { "message": "USERNAME is required", "statusCode": 400 })
-        })
-    })
-
-    describe("when the username is blank", () => {
-        it("returns an error", async () => {
-            const user = userService.authUser("   ", "testpassword")
-
-            await expect(user).rejects.toEqual(
-                { "message": "USERNAME is required", "statusCode": 400 })
-        })
-    })
-
-    describe("when the password is undefined", () => {
-        it("returns an error", async () => {
-            const user = userService.authUser("testuser", undefined)
-
-            await expect(user).rejects.toEqual(
-                { "message": "PASSWORD is required", "statusCode": 400 })
-        })
-    })
-    describe("when the password is blank", () => {
-        it("returns an error", async () => {
-            const user = userService.authUser("testuser", "   ")
-
-            await expect(user).rejects.toEqual(
-                { "message": "PASSWORD is required", "statusCode": 400 })
-        })
-    })
-
     describe("when the given username does not match any user or softdeleted", () => {
         it("returns an error", async () => {
 

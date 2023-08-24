@@ -17,9 +17,9 @@ const userService = require('../../src/services/user_service')
 describe("softDeleteUser", () => {
     describe("when the validation is successfull", () => {
 
-        beforeEach(() => {
+        beforeEach(() =>
             global.Date.now = jest.fn()
-        })
+        )
 
         it("adds deletedAt field to user", async () => {
 
@@ -58,7 +58,7 @@ describe("softDeleteUser", () => {
             })
         })
 
-        describe("when the given ID does not match any user or softDeleted", () => {
+        describe("when the given ID does not match any user or is deleted", () => {
             it("returns an error", async () => {
 
                 mockFind.mockResolvedValue(null)

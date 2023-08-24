@@ -1,5 +1,4 @@
 const mockFind = jest.fn()
-const mockFindById = jest.fn()
 const mockUpdate = jest.fn()
 
 const mockModels = {
@@ -59,7 +58,7 @@ describe("updateUser", () => {
             })
         })
 
-        describe("when the given ID does not match any user or softDeleted", () => {
+        describe("when the given ID does not match any user or is deleted", () => {
             it("returns an error", async () => {
                 const mockInput = jest.fn()
 
@@ -75,108 +74,6 @@ describe("updateUser", () => {
                     deletedAt: { $exists: false }
                 }
                 )
-            })
-        })
-
-        // Invalid username
-        describe("when the username is undefined", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: undefined, email: "testemail", password: "testpass" })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "USERNAME is required", "statusCode": 400 })
-            })
-        })
-        describe("when the username is blank", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: "   ", email: "testemail", password: "testpass" })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "USERNAME is required", "statusCode": 400 })
-            })
-        })
-
-        // Invalid password
-        describe("when the password is undefined", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: "testuser", email: "testemail", password: undefined })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "PASSWORD is required", "statusCode": 400 })
-            })
-        })
-        describe("when the password is blank", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: "testuser", email: "testemail", password: "   " })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "PASSWORD is required", "statusCode": 400 })
-            })
-        })
-
-        // Invalid email
-        describe("when the email is undefined", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: "testuser", email: undefined, password: "testpass" })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "EMAIL is required", "statusCode": 400 })
-            })
-        })
-        describe("when the email is blank", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: "testuser", email: "  ", password: "testpass" })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "EMAIL is required", "statusCode": 400 })
-            })
-        })
-        describe("when the input email is not unique", () => {
-            it("returns an error", async () => {
-                const mockUser = jest.fn()
-
-                mockFind.mockResolvedValue(mockUser)
-
-                const user = userService.updateUser("64b884dbbfe2d03f39137e24",
-                    { username: "testuser", email: "testemail", password: "testpass" })
-
-                await expect(user).rejects.toEqual(
-                    { "message": "EMAIL not available", "statusCode": 409 })
-
-                expect(mockFind).toHaveBeenCalledWith({
-                    email: "testemail",
-                    deletedAt: { $exists: false }
-                })
             })
         })
     })

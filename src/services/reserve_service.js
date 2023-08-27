@@ -23,12 +23,12 @@ exports.createReserve = async (userId, houseId, date) => {
     await House.updateOne({ _id: houseId },
         { available: false })
 
-    // Creates reserve on house
+    // Creates reserve
     const reserve = await Reserve.create(
         { user: userId, house: houseId, date })
 
-    await reserve.populate('user')
-    await reserve.populate('house')
+    await Reserve.populate(reserve, 'user')
+    await Reserve.populate(reserve, 'house')
 
     return reserve
 }
@@ -36,7 +36,8 @@ exports.createReserve = async (userId, houseId, date) => {
 exports.listMyReserves = async (userId) => {
 
     const reserves = await Reserve.find({ user: userId })
-        .populate('house')
+
+    await Reserve.populate(reserves, 'house')
 
     return reserves
 }
@@ -48,9 +49,7 @@ exports.cancelReserve = async (userId, reserveId) => {
 
     // Checks for reserve ID
     const reserve = await Reserve.findOne({ _id: reserveId })
-        .populate('house')
-
-    if (!reserve) throw errors.invalidID
+    if (!reserve) throw errors.notFound
 
     // Checks if reserve belongs to user
     if (String(reserve.user) !== userId) throw errors.notAllowed
@@ -62,4 +61,3 @@ exports.cancelReserve = async (userId, reserveId) => {
     // Deletes the reserve
     return await Reserve.deleteOne({ _id: reserveId })
 }
-

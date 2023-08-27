@@ -18,7 +18,6 @@ exports.createHouse = async (userId, description, price, available) => {
 }
 
 exports.listHouses = async (available) => {
-
     // List houses by filter
     const houses = await House.find({ available })
 
@@ -28,11 +27,15 @@ exports.listHouses = async (available) => {
 exports.updateHouse = async (userId, houseId, input) => {
 
     // Checks Object ID validity
-    if (!isValidObjectId(houseId)) throw errors.invalidID
+    if (!isValidObjectId(houseId)) {
+        throw errors.invalidID
+    }
 
     // Checks for house ID
     const house = await House.findOne({ _id: houseId })
-    if (!house) throw errors.invalidID
+    if (!house) {
+        throw errors.invalidID
+    }
 
     // Forbid changing userID field
     if (input.user || String(input.user) === "") {

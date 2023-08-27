@@ -107,8 +107,12 @@ exports.updateUser = async (id, input) => {
     })
     if (!user) throw errors.invalidID
 
+    // Filter required fields for validation
+    const { username, email, password } = input
+    const inputFilter = { username, email, password }
+
     // Validate provided fields
-    validateFields(input)
+    validateFields(inputFilter)
 
     // If provided, check email uniqueness only when comparing to other users
     if (input.email && (input.email !== user.email)) {

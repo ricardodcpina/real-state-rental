@@ -67,7 +67,7 @@ describe('createReserve', () => {
                     { "message": "Resource not found", "statusCode": 404 })
 
                 expect(mockFind).toHaveBeenCalledWith(
-                    { _id: '64d6df45781a1517d42d5071', available: true }
+                    { _id: '64d6df45781a1517d42d5071' }
                 )
             })
         })

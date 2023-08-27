@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1693158452381" clover="3.2.0">
-  <project timestamp="1693158452382" name="All files">
-    <metrics statements="367" coveredstatements="317" conditionals="57" coveredconditionals="52" methods="19" coveredmethods="18" elements="443" coveredelements="387" complexity="0" loc="367" ncloc="367" packages="2" files="7" classes="7"/>
+<coverage generated="1693158622678" clover="3.2.0">
+  <project timestamp="1693158622678" name="All files">
+    <metrics statements="376" coveredstatements="370" conditionals="64" coveredconditionals="62" methods="19" coveredmethods="18" elements="459" coveredelements="450" complexity="0" loc="376" ncloc="376" packages="2" files="7" classes="7"/>
     <package name="src">
       <metrics statements="46" coveredstatements="46" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="config.js" path="C:\Users\Avell\Projetos\HouseRental\src\config.js">

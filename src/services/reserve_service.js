@@ -1,19 +1,14 @@
-const { isValidObjectId } = require('mongoose')
-const { House, Reserve } = require('../models')
-
 const errors = require('../errors')
 
 exports.createReserve = async (userId, houseId, date) => {
 
-    // Checks Object ID validity
-    if (!isValidObjectId(houseId)) throw errors.invalidID
+    const house = await models.House.findOne({ _id: houseId })
 
-    // Checks for house ID and availability
-    const house = await House.findOne({
-        _id: houseId, available: true
-    })
-    if (!house) throw errors.notFound
+    if (!house) {
+        throw errors.invalidID
+    }
 
+    // Checks if user is not the owner
     // Checks if user is not the owner
     if (String(house.user) === userId) {
         throw errors.notAllowed

@@ -1,2 +1,0 @@
-exports.SALT = '$2b$10$4K8VYfIHxZEatcUCWaklJO'
-exports.JWT_SECRET = 'SUPERSECRET'

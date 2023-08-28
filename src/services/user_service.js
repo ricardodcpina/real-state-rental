@@ -1,10 +1,11 @@
+require('dotenv').config()
+
 const { isValidObjectId } = require('mongoose')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
-const models = require('../models')
+const { User } = require('../models')
 const errors = require('../errors')
-const config = require('../config') // Create env variables!
 
 ////////////////////////  Auxiliary Functions  /////////////////////////
 
@@ -28,7 +29,7 @@ const validateFields = (input) => {
 const verifyEmail = async (email) => {
 
     // Check email is unique
-    const user = await models.User.findOne({
+    const user = await User.findOne({
         email,
         deletedAt: { $exists: false }
     })
@@ -43,12 +44,12 @@ const verifyEmail = async (email) => {
     return true
 }
 
-const hashPassword = async (password) => {
-    return await bcrypt.hash(password, config.SALT)
+const hashPassword = (password) => {
+    return bcrypt.hash(password, process.env.SALT)
 }
 
 const generateToken = (userId) => {
-    return jwt.sign({ sub: userId }, config.JWT_SECRET, { expiresIn: '600s' })
+    return jwt.sign({ sub: userId }, process.env.HASH_SECRET, { expiresIn: '600s' })
 }
 
 ////////////////////////  Main Functions  //////////////////////////////
@@ -66,7 +67,7 @@ exports.createUser = async (username, email, password) => {
 
     // Save user on database
     const input = { username, email, password: cryptedPassword }
-    const user = await models.User.create(input)
+    const user = await User.create(input)
 
     return user
 }
@@ -78,7 +79,7 @@ exports.authUser = async (username, password) => {
 
     // Checks username existence
 
-    const user = await models.User.findOne({
+    const user = await User.findOne({
         username,
         deletedAt: { $exists: false }
     })
@@ -101,7 +102,7 @@ exports.updateUser = async (id, input) => {
     if (!isValidObjectId(id)) throw errors.invalidID
 
     // Checks for user ID
-    const user = await models.User.findOne({
+    const user = await User.findOne({
         _id: id,
         deletedAt: { $exists: false }
     })
@@ -125,7 +126,7 @@ exports.updateUser = async (id, input) => {
     }
 
     // Update user data on database
-    const updatedUser = await models.User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
         { _id: id }, { ...input }, { new: true })
 
     return updatedUser
@@ -137,7 +138,7 @@ exports.findUser = async (id) => {
     if (!isValidObjectId(id)) throw errors.invalidID
 
     // Checks for user ID
-    const user = await models.User.findOne({
+    const user = await User.findOne({
         _id: id,
         deletedAt: { $exists: false }
     })
@@ -148,7 +149,7 @@ exports.findUser = async (id) => {
 }
 
 exports.listUsers = async () => {
-    return await models.User.find({ deletedAt: null })
+    return await User.find({ deletedAt: null })
 }
 
 exports.softDeleteUser = async (id) => {
@@ -157,7 +158,7 @@ exports.softDeleteUser = async (id) => {
     if (!isValidObjectId(id)) throw errors.invalidID
 
     // Checks for user ID
-    const user = await models.User.findOne({
+    const user = await User.findOne({
         _id: id,
         deletedAt: { $exists: false }
     })
@@ -165,7 +166,7 @@ exports.softDeleteUser = async (id) => {
     if (!user) throw errors.invalidID
 
     // Add deletedAt field to user
-    const updatedUser = await models.User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
         { _id: id }, { deletedAt: Date.now() }, { new: true })
 
     return updatedUser

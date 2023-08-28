@@ -1,8 +1,9 @@
 const mockFind = jest.fn()
 const mockSoftDelete = jest.fn()
-
+const mockIdValidation = jest.fn()
 const RealDate = Date.now
 
+const mockMongoose = { isValidObjectId: mockIdValidation }
 const mockModels = {
     User: {
         findOne: mockFind,
@@ -11,6 +12,7 @@ const mockModels = {
 }
 
 jest.mock('../../src/models', () => mockModels)
+jest.mock('mongoose', () => mockMongoose)
 
 const userService = require('../../src/services/user_service')
 
@@ -25,6 +27,7 @@ describe("softDeleteUser", () => {
 
             const mockUser = jest.fn()
 
+            mockIdValidation.mockReturnValue(true)
             mockFind.mockResolvedValue(mockUser)
             mockSoftDelete.mockResolvedValue(mockUser)
 
@@ -50,6 +53,8 @@ describe("softDeleteUser", () => {
     describe("when the validation fails", () => {
         describe("when the ID is not a valid ObjectID", () => {
             it("returns an error", async () => {
+                mockIdValidation.mockReturnValue(false)
+
                 const user = userService.softDeleteUser("846351")
 
                 await expect(user).rejects.toEqual({
@@ -61,6 +66,7 @@ describe("softDeleteUser", () => {
         describe("when the given ID does not match any user or is deleted", () => {
             it("returns an error", async () => {
 
+                mockIdValidation.mockReturnValue(true)
                 mockFind.mockResolvedValue(null)
 
                 const user = userService.findUser("64b884dbbfe2d03f39137e24")

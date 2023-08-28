@@ -1,5 +1,6 @@
+require('dotenv').config()
+
 const jwt = require('jsonwebtoken')
-const { JWT_SECRET } = require('./config')
 const { notAuthenticated } = require('./errors')
 
 exports.authentication = (req, res, next) => {
@@ -17,7 +18,7 @@ exports.authentication = (req, res, next) => {
         return res.status(statusCode)
             .json({ error: message })
 
-    jwt.verify(token, JWT_SECRET, (err, payload) => {
+    jwt.verify(token, process.env.HASH_SECRET, (err, payload) => {
         if (err) {
             return res.status(statusCode)
                 .json({ error: message })

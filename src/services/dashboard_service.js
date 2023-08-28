@@ -1,7 +1,7 @@
-const models = require('../models')
+const { House } = require('../models')
 
 exports.listMyHouses = async (userId) => {
-    const houses = await models.House.find({ user: userId })
+    const houses = await House.find({ user: userId })
 
     return houses
 }

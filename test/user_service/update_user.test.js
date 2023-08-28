@@ -1,6 +1,8 @@
 const mockFind = jest.fn()
 const mockUpdate = jest.fn()
+const mockIdValidation = jest.fn()
 
+const mockMongoose = { isValidObjectId: mockIdValidation }
 const mockModels = {
     User: {
         findOne: mockFind,
@@ -9,6 +11,7 @@ const mockModels = {
 }
 
 jest.mock('../../src/models', () => mockModels)
+jest.mock('mongoose', () => mockMongoose)
 
 const userService = require('../../src/services/user_service')
 
@@ -22,6 +25,7 @@ describe("updateUser", () => {
                 password: "testpass"
             }
 
+            mockIdValidation.mockResolvedValue(true)
             mockFind.mockResolvedValue(mockUser)
             mockUpdate.mockResolvedValue(mockUpdated)
 
@@ -50,6 +54,7 @@ describe("updateUser", () => {
         describe("when the ID is not a valid ObjectID", () => {
             it("returns an error", async () => {
                 const mockInput = jest.fn()
+                mockIdValidation.mockResolvedValue(false)
 
                 const user = userService.updateUser("4846541", mockInput) // Invalid ObjectID
 
@@ -61,7 +66,8 @@ describe("updateUser", () => {
         describe("when the given ID does not match any user or is deleted", () => {
             it("returns an error", async () => {
                 const mockInput = jest.fn()
-
+                
+                mockIdValidation.mockResolvedValue(true)
                 mockFind.mockResolvedValue(null)
 
                 const user = userService.updateUser("64b884dbbfe2d03f39137e24", mockInput) // Valid ObjectID

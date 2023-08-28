@@ -1,8 +1,10 @@
+require('dotenv').config()
+
 const mongoose = require('mongoose')
 const { app } = require('./app')
 
-const PORT = 8000
-const DATABASE_URL = 'mongodb://localhost:27017/houserental'
+const PORT = process.env.PORT || 8000
+const DATABASE_URL = process.env.MONGO_URL
 
 const main = async () => {
     try {

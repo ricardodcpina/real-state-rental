@@ -10,6 +10,7 @@ const UserSchema = new Schema({
 exports.User = model('User', UserSchema)
 
 const HouseSchema = new Schema({
+    thumbnail: String,
     description: String,
     price: Number,
     available: Boolean,

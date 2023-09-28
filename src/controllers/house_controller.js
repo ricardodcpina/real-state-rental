@@ -1,10 +1,15 @@
 const express = require('express')
+const multer = require('multer')
 const router = express.Router()
+
+const uploadConfig = require('../config/upload')
+const upload = multer(uploadConfig).single('thumbnail')
 
 const houseService = require('../services/house_service')
 const { authentication } = require('../middlewares')
 
-router.post('/', authentication, async (req, res) => {
+router.post('/', authentication, upload, async (req, res) => {
+
     const { description, price, available } = req.body
     const { userId } = req
 

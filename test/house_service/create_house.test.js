@@ -17,14 +17,15 @@ describe('createHouse', () => {
             mockCreate.mockResolvedValue(mockHouse)
 
             const house = houseService.createHouse(
-                'testUserId', 'description', 500, true
+                'testUserId', 'filename', 'description', 500, true
             )
 
             await expect(house).resolves.toBe(mockHouse)
 
             expect(mockCreate).toHaveBeenCalledWith({
                 user: 'testUserId', description: 'description',
-                price: 500, available: true
+                thumbnail: 'filename', price: 500,
+                available: true
             })
         })
     })

@@ -9,13 +9,13 @@ const houseService = require('../services/house_service')
 const { authentication } = require('../middlewares')
 
 router.post('/', authentication, upload, async (req, res) => {
-
+    const { filename } = req.file
     const { description, price, available } = req.body
     const { userId } = req
 
     try {
         const house = await houseService.createHouse(
-            userId, description, price, available
+            userId, filename, description, price, available
         )
         res.status(201).json(house)
     }

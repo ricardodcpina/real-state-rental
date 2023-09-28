@@ -1,3 +1,6 @@
+require('dotenv').config()
+const PORT = process.env.PORT || 8000
+
 const { Schema, model } = require('mongoose')
 
 const UserSchema = new Schema({
@@ -18,6 +21,12 @@ const HouseSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     }
+}, {
+    toJSON: { virtuals: true }
+})
+
+HouseSchema.virtual('thumbnail_url').get(function () {
+    return `http://localhost:${PORT}/files/${this.thumbnail}`
 })
 
 exports.House = model('House', HouseSchema)

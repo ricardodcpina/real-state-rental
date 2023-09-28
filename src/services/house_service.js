@@ -4,14 +4,14 @@ const { validateFields } = require('./user_service')
 const { House } = require('../models')
 const errors = require('../errors')
 
-exports.createHouse = async (userId, description, price, available) => {
+exports.createHouse = async (userId, filename, description, price, available) => {
 
     // Validate required fields
     validateFields({ description, price, available })
 
     // Save house on database
     const house = await House.create({
-        user: userId, description, price, available
+        user: userId, thumbnail: filename, description, price, available
     })
 
     return house

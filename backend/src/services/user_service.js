@@ -41,6 +41,7 @@ const verifyEmail = async (email) => {
 
     if (!regex.test(email)) throw errors.emailnotFormatted
 
+
     return true
 }
 
@@ -49,7 +50,7 @@ const hashPassword = (password) => {
 }
 
 const generateToken = (userId) => {
-    return jwt.sign({ sub: userId }, process.env.HASH_SECRET, { expiresIn: '600s' })
+    return jwt.sign({ sub: userId }, process.env.HASH_SECRET, { expiresIn: '300s' })
 }
 
 ////////////////////////  Main Functions  //////////////////////////////
@@ -93,7 +94,7 @@ exports.authUser = async (username, password) => {
     // Authenticate
     const token = generateToken(user._id)
 
-    return { authenticated: true, token }
+    return { authenticated: true, token, userId: user._id }
 }
 
 exports.updateUser = async (id, input) => {

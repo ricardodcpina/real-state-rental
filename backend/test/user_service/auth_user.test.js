@@ -18,17 +18,18 @@ jest.mock('jsonwebtoken', () => mockJWT)
 const userService = require('../../src/services/user_service')
 
 describe("when the validation is successfull", () => {
-    it("returns token for authorized user", async () => {
+    it("returns token and userId for authorized user", async () => {
         const mockUser = jest.fn()
         const mockToken = jest.fn()
         mockUser.password = "$2b$10$4K8VYfIHxZEatcUCWaklJORNamNV16GgE6wYLa9EjWonGwRPiExa."
+        mockUser._id = 'userId'
 
         mockFind.mockResolvedValue(mockUser)
         mockSign.mockReturnValue(mockToken)
 
         const user = userService.authUser("testuser", "testpass")
 
-        await expect(user).resolves.toEqual({ authenticated: true, token: mockToken })
+        await expect(user).resolves.toEqual({ authenticated: true, token: mockToken, userId: mockUser._id})
 
         expect(mockFind).toHaveBeenCalledWith({
             username: 'testuser',

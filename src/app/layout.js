@@ -1,12 +1,11 @@
-import { Inter } from 'next/font/google'
 import './globals.css'
+import { cookies } from 'next/headers';
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
 
 import FilterMenu from './components/FilterMenu';
 import Logo from "./components/Logo";
 import NavBar from "./components/NavBar";
-import Link from "next/link";
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'Real Estate Rental',
@@ -21,7 +20,6 @@ export default function RootLayout({ children }) {
           <div className="flex items-center border-solid border-b-2 border-zinc-700 bg-black">
             <Logo />
             <span className="flex grow"><NavBar /></span>
-            <Link className='py-6 px-10 hover:bg-zinc-900' href='/login'>LOGIN</Link>
           </div>
           <div className="flex">
             <FilterMenu />

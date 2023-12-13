@@ -10,15 +10,15 @@ export default function HouseCard({ src, name, estate_id, user_id }) {
 
     return (
         <>
-            <div className='m-4 shadow-lg hover:outline hover:outline-indigo-400 cursor-pointer' >
+            <div className='h-[230px] w-[235px] m-4 shadow-lg hover:outline hover:outline-indigo-400 cursor-pointer' >
                 <Link href={`/estate/${name}`}>
-                    <div className='flex flex-col justify-center items-center '>
-                        <Image src={src} width={250} height={300} />
+                    <div className='flex flex-col justify-center items-center'>
+                        {src && <Image src={src} width={300} height={250} alt='Estate picture' />}
                         <h1 className='text-black mt-1'>{name}</h1>
                     </div>
                 </Link>
                 <div className='flex justify-end items-center mr-4 my-2'>
-                    {path === `/dashboard/${user_id}` &&
+                    {src && path === `/dashboard/${user_id}` &&
                         (<>
                             <Link href={`/dashboard/${user_id}/edit-estate/${estate_id}`}>
                                 <PencilSquareIcon className='h-6 w-6 mx-2 text-zinc-100 bg-yellow-700 hover:bg-yellow-600 rounded-md border-2 border-gray-700' />

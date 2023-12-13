@@ -25,7 +25,7 @@ router.post('/', authentication, upload, async (req, res) => {
     }
 })
 
-router.get('/', authentication, async (req, res) => {
+router.get('/', async (req, res) => {
     const { available } = req.query
 
     try {

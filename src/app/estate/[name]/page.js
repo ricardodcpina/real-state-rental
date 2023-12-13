@@ -3,6 +3,8 @@ import Image from 'next/image'
 export default function Page({ params }) {
     const name = params.name.replaceAll('%20', " ")
 
+    
+
     return (
         <div className="w-2/6 h-2/3 container m-16 p-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg text-slate-950 font-bold">
             <div className='flex flex-col justify-center items-center '>

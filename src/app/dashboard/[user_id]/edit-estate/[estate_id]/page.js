@@ -1,6 +1,6 @@
 export default function Page() {
     return (
-        <div className="container m-16 w-2/6 p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950">
+        <div className="container m-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950">
             <form className="flex flex-col" action="">
                 <h1 className="text-2xl mb-4">Edit Estate</h1>
                 <label htmlFor="estate-picture">Picture</label>

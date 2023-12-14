@@ -23,6 +23,7 @@ router.post('/auth', async (req, res) => {
         const user = await userService.authUser(username, password)
         res.status(200).json(user)
     } catch (err) {
+        console.log(err)
         if (!err.statusCode) err.statusCode = 500
         res.status(err.statusCode).json({ error: err.message })
     }
@@ -47,7 +48,6 @@ router.get('/:id', authentication, async (req, res) => {
 
     try {
         const user = await userService.findUser(id)
-
         res.status(200).json(user)
     } catch (err) {
         if (!err.statusCode) err.statusCode = 500

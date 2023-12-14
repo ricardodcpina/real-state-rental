@@ -2,6 +2,7 @@ import LoginForm from "../components/LoginForm"
 import { redirect } from "next/navigation"
 import { cookies } from 'next/headers'
 
+
 async function loginUser(formData) {
     'use server'
 
@@ -16,6 +17,7 @@ async function loginUser(formData) {
     })
 
     const credentials = await data.json()
+
     cookies().set('user_token', credentials.token)
     cookies().set('user_id', credentials.userId)
     console.log(cookies().getAll())

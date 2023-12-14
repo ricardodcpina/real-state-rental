@@ -1,4 +1,20 @@
-export default function Page() {
+export default function Page({params}) {
+    const { user_id, estate_id } = params
+    console.log(user_id, estate_id)
+
+    async function getHouse(userId, houseId, formData) {
+        'use server'
+
+        await fetch(`http://localhost:8000/houses/${houseId}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData,
+            cache: 'no-cache'
+        })
+
+        revalidatePath(`/dashboard/${user_id}`)
+    }
+
     return (
         <div className="container m-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950">
             <form className="flex flex-col" action="">

@@ -24,6 +24,18 @@ exports.listHouses = async (available) => {
     return houses
 }
 
+// MUST BE INCLUDED IN TEST
+exports.findHouse = async (houseId) => {
+    // Checks Object ID validity
+    if (!isValidObjectId(houseId)) throw errors.invalidID
+
+    // Checks for house ID
+    const house = await House.findOne({ _id: houseId })
+    if (!house) throw errors.invalidID
+
+    return house
+}
+
 exports.updateHouse = async (userId, houseId, input) => {
 
     // Checks Object ID validity

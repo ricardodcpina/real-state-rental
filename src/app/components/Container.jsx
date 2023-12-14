@@ -23,21 +23,7 @@ export default async function Container() {
                 {houses && houses.map(estate => (
                     <HouseCard key={estate._id} name={estate.description} src={`/${estate.thumbnail}`} estate_id={estate._id} />
                 ))}
-                {/* <HouseCard name="Exotic House" src="/exotic-house.png" estate_id={2} />
-                <HouseCard name="House C" src="/fancy-house.png" estate_id={3} />
-                <HouseCard name="House D" src="/simple-house.png" estate_id={4} />
-                <HouseCard name="House E" src="/test-house.png" estate_id={5} />
-                <HouseCard name="House F" src="/house-pool.png" estate_id={6} />
-                <HouseCard name="House G" src="/exotic-house.png" estate_id={7} />
-                <HouseCard name="House I" src="/fancy-house.png" estate_id={8} />
-                <HouseCard name="House J" src="/simple-house.png" estate_id={9} />
-                <HouseCard name="House K" src="/test-house.png" estate_id={10} />
-                <HouseCard name="House L" src="/house-pool.png" estate_id={11} /> */}
-                <HouseCard name="" src="" estate_id={12} />
-                <HouseCard name="" src="" estate_id={13} />
-                <HouseCard name="" src="" estate_id={14} />
-                <HouseCard name="" src="" estate_id={15} />
-                <HouseCard name="" src="" estate_id={1} />
+                <HouseCard src="" />
             </div>
             <div className='flex justify-center items-center'>
                 <nav aria-label="Page navigation">

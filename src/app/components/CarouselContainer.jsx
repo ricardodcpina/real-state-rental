@@ -8,6 +8,17 @@ export default async function CarouselContainer({ description }) {
     const user_id = cookies().get('user_id')?.value
     const token = cookies().get('user_token')?.value
 
+    async function deleteHouse(userId, houseId) {
+        'use server'
+
+        await fetch(`http://localhost:8000/houses/${houseId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        })
+
+        revalidatePath(`/dashboard/${user_id}`)
+    }
+
     async function getMyHouses() {
         'use server'
 
@@ -20,13 +31,13 @@ export default async function CarouselContainer({ description }) {
 
         if (myHouses?.error) return
 
-        revalidatePath(`/dashboard/${user_id}`)
         return myHouses
     }
     const houses = await getMyHouses()
 
     async function getMyReserves() {
         'use server'
+
         const data = await fetch('http://localhost:8000/houses/reserves', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
@@ -36,10 +47,10 @@ export default async function CarouselContainer({ description }) {
 
         if (myReserves?.error) return
 
-        revalidatePath(`/dashboard/${user_id}`)
         return myReserves
     }
     const reserves = await getMyReserves()
+    revalidatePath(`/dashboard/${user_id}`)
 
     return (
         <div className="h-[385px] w-[1400px] mx-16 my-8 p-8 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg">
@@ -55,19 +66,22 @@ export default async function CarouselContainer({ description }) {
             </div>
             <div className='flex mt-1 justify-start items-center'>
                 {description === "My Estates" ? (
-                    houses && houses.map(estate =>
-                        <HouseCard key={estate._id} name={estate.description} src={`/${estate.thumbnail}`} estate_id={estate._id} user_id={user_id} />
+                    houses && houses.map((estate) =>
+                        <HouseCard
+                            key={estate._id}
+                            name={estate.description}
+                            src={`/${estate.thumbnail}`}
+                            estate_id={estate._id}
+                            user_id={user_id}
+                            deleteHouse={deleteHouse}
+                        />
                     )
                 ) : (
                     reserves && reserves.map(reserve =>
                         <HouseCard key={estate._id} name={reserve.house.description} src={`/${reserve.house.thumbnail}`} reserve_id={reserve.house._id} user_id={user_id} />
                     )
                 )}
-                <HouseCard name="Pool House" src="/house-pool.png" estate_id={1} user_id={user_id} location="Arizona" />
-                <HouseCard name="Exotic House" src="/exotic-house.png" estate_id={2} user_id={user_id} />
-                <HouseCard name="" src="" estate_id={4} user_id={user_id} />
-                <HouseCard name="" src="" estate_id={5} user_id={user_id} />
-                <HouseCard name="" src="" estate_id={4} user_id={user_id} />
+                <HouseCard src="" />
             </div>
             <div className='flex justify-center'>
                 <nav aria-label="Page navigation">

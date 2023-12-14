@@ -38,6 +38,19 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.get('/:id', async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const house = await houseService.findHouse(id)
+        res.status(200).json(house)
+    }
+    catch (err) {
+        if (!err.statusCode) err.statusCode = 500
+        res.status(err.statusCode).json({ error: err.message })
+    }
+})
+
 router.put('/:id', authentication, async (req, res) => {
     const houseId = req.params.id
     const input = req.body

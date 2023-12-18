@@ -29,7 +29,7 @@ export default async function Page({ params }) {
                 <label htmlFor="estate-name">Estate Name</label>
                 <input id="estate-name" name="description" type="text" className="mb-4" />
                 <label htmlFor="estate-location">Location</label>
-                <input id="estate-location" name="estate-location" type="text" className="mb-4" />
+                <input id="estate-location" name="location" type="text" className="mb-4" />
                 <label htmlFor="price">Price in USD</label>
                 <input id="estate-price" name="price" type="number" step="100.0" className="mb-4" />
                 <div>

@@ -2,7 +2,6 @@ import { cookies } from "next/headers"
 
 export default async function Page({ params }) {
     const userId = params.user_id
-    console.log('userId', userId)
     const token = cookies().get('user_token')?.value
 
     async function getUser() {
@@ -14,7 +13,6 @@ export default async function Page({ params }) {
         })
 
         const user = await data.json()
-        console.log('user from db', user)
         return user
     }
 

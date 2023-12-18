@@ -78,7 +78,7 @@ export default async function CarouselContainer({ description }) {
                     )
                 ) : (
                     reserves && reserves.map(reserve =>
-                        <HouseCard key={estate._id} name={reserve.house.description} src={`/${reserve.house.thumbnail}`} reserve_id={reserve.house._id} user_id={user_id} />
+                        <HouseCard key={reserve._id} name={reserve.house.description} src={`/${reserve.house.thumbnail}`} reserve_id={reserve.house._id} user_id={user_id} />
                     )
                 )}
                 <HouseCard src="" />

@@ -10,8 +10,8 @@ const dashboardController = require('./controllers/dashboard_controller')
 app.use('/', express.json())
 app.use('/files', express.static(path.resolve(__dirname, '..', 'uploads')))
 app.use('/users', userController)
-app.use('/houses', houseController)
 app.use('/houses', reserveController)
+app.use('/houses', houseController)
 app.use('/dashboard', dashboardController)
 
 exports.app = app

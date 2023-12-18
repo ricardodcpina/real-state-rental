@@ -11,7 +11,7 @@ export default function HouseCard({ src, name, estate_id, user_id, deleteHouse }
     return (
         <>
             <div className='h-[230px] w-[235px] m-4 shadow-lg hover:outline hover:outline-indigo-400 cursor-pointer overflow-hidden' >
-                <Link href={`/estate/${name}`}>
+                <Link href={`/estate/${estate_id}`}>
                     <div className='flex flex-col justify-center items-center'>
                         {src && <Image src={src} width={300} height={250} alt='Estate picture' />}
                         <h1 className='text-black mt-1'>{name}</h1>

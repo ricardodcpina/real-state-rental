@@ -28,7 +28,7 @@ describe('updateHouse', () => {
             mockFindAndUpdate.mockResolvedValue(mockUpdated)
 
             const house = houseService.updateHouse('userId',
-                '64d6df45781a1517d42d5071', { price: 500 })
+                '64d6df45781a1517d42d5071', { price: 500 }, 'filename.png')
 
             await expect(house).resolves.toBe(mockUpdated)
 
@@ -38,7 +38,7 @@ describe('updateHouse', () => {
 
             expect(mockFindAndUpdate).toHaveBeenCalledWith(
                 { _id: '64d6df45781a1517d42d5071' },
-                { price: 500 }, { new: true }
+                { thumbnail: 'filename.png', price: 500 }, { new: true }
             )
         })
     })

@@ -36,7 +36,7 @@ exports.findHouse = async (houseId) => {
     return house
 }
 
-exports.updateHouse = async (userId, houseId, input) => {
+exports.updateHouse = async (userId, houseId, input, filename) => {
 
     // Checks Object ID validity
     if (!isValidObjectId(houseId)) throw errors.invalidID
@@ -60,7 +60,7 @@ exports.updateHouse = async (userId, houseId, input) => {
 
     // Update house on database
     const updatedHouse = await House.findByIdAndUpdate(
-        { _id: houseId }, { ...input }, { new: true })
+        { _id: houseId }, { thumbnail: filename, ...input }, { new: true })
 
     return updatedHouse
 }

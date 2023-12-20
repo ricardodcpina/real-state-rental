@@ -51,14 +51,15 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-router.put('/:id', authentication, async (req, res) => {
+router.put('/:id', authentication, upload, async (req, res) => {
+    const { filename } = req.file
+    const { userId } = req
     const houseId = req.params.id
     const input = req.body
-    const { userId } = req
 
     try {
-        const house = await houseService.updateHouse(userId, houseId, input)
-
+        const house = await houseService.updateHouse(
+            userId, houseId, input, filename)
         res.status(200).json(house)
     } catch (err) {
         if (!err.statusCode) err.statusCode = 500
@@ -72,7 +73,6 @@ router.delete('/:id', authentication, async (req, res) => {
 
     try {
         const house = await houseService.deleteHouse(userId, houseId)
-
         res.status(200).json(house)
     } catch (err) {
         res.status(err.statusCode).json({ error: err.message })

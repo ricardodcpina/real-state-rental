@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
-const { notAuthenticated } = require('./errors')
+const { notAuthenticated, tokenExpired } = require('./errors')
 
 exports.authentication = (req, res, next) => {
     const authHeader = req.headers['authorization']
@@ -22,6 +22,11 @@ exports.authentication = (req, res, next) => {
 
     jwt.verify(token, process.env.HASH_SECRET, (err, payload) => {
         if (err) {
+            if (err.message === 'jwt expired') {
+                message = tokenExpired.message
+                statusCode = tokenExpired.statusCode
+            }
+
             return res.status(statusCode)
                 .json({ error: message })
         }

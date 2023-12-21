@@ -1,6 +1,7 @@
 import { cookies } from "next/headers"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import Image from "next/image"
 
 export default async function Page({ params }) {
     const token = cookies().get('user_token').value
@@ -37,7 +38,8 @@ export default async function Page({ params }) {
         <div className="container m-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950">
             <form className="flex flex-col" action={updateEstate}>
                 <h1 className="text-2xl mb-4">Edit Estate</h1>
-                <label htmlFor="estate-picture">Picture</label>
+                <Image src={`/${estate.thumbnail}`} width={400} height={500} alt="Picture of estate" />
+                <label className="mt-4" htmlFor="estate-picture">Picture</label>
                 <input className="mb-4" id="estate-picture" name="thumbnail" type="file" accept=".jpg, .jpeg, .png" />
                 <label htmlFor="estate-name">Estate Name</label>
                 <input className="mb-4" id="estate-name" name="description" type="text" placeholder={estate.description} />

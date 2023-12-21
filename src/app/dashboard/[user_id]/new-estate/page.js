@@ -25,13 +25,13 @@ export default async function Page({ params }) {
             <form className="flex flex-col" action={createEstate} >
                 <h1 className="text-2xl mb-4">Add Estate</h1>
                 <label htmlFor="thumbnail">Picture</label>
-                <input id="estate-picture" name="thumbnail" type="file" accept=".jpg, .jpeg, .png" className="mb-4 " />
+                <input className="mb-4" id="estate-picture" name="thumbnail" type="file" accept=".jpg, .jpeg, .png" required />
                 <label htmlFor="estate-name">Estate Name</label>
-                <input id="estate-name" name="description" type="text" className="mb-4" />
+                <input className="mb-4" id="estate-name" name="description" type="text"  required/>
                 <label htmlFor="estate-location">Location</label>
-                <input id="estate-location" name="location" type="text" className="mb-4" />
+                <input className="mb-4" id="estate-location" name="location" type="text"  required />
                 <label htmlFor="price">Price in USD</label>
-                <input id="estate-price" name="price" type="number" step="100.0" className="mb-4" />
+                <input className="mb-4" id="estate-price" name="price" type="number" step="100.0" required/>
                 <div>
                     <h1>Estate available for rental?</h1>
                     <label htmlFor="estate-available">

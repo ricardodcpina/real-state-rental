@@ -35,7 +35,7 @@ export default async function CarouselContainer({ description }) {
     }
     const houses = await getMyHouses()
 
-    async function getMyReserves() {
+    async function fetchMyReserves() {
         'use server'
 
         const data = await fetch('http://localhost:8000/houses/reserves', {
@@ -49,7 +49,7 @@ export default async function CarouselContainer({ description }) {
 
         return myReserves
     }
-    const reserves = await getMyReserves()
+    const reserves = await fetchMyReserves()
     revalidatePath(`/dashboard/${user_id}`)
 
     return (
@@ -69,8 +69,8 @@ export default async function CarouselContainer({ description }) {
                     houses && houses.map((estate) =>
                         <HouseCard
                             key={estate._id}
-                            name={estate.description}
                             src={`/${estate.thumbnail}`}
+                            name={estate.description}
                             estate_id={estate._id}
                             user_id={user_id}
                             deleteHouse={deleteHouse}
@@ -78,10 +78,15 @@ export default async function CarouselContainer({ description }) {
                     )
                 ) : (
                     reserves && reserves.map(reserve =>
-                        <HouseCard key={reserve._id} name={reserve.house.description} src={`/${reserve.house.thumbnail}`} reserve_id={reserve.house._id} user_id={user_id} />
+                        <HouseCard key={reserve._id}
+                            src={`/${reserve.house.thumbnail}`}
+                            name={reserve.house.description}
+                            reserve_date={reserve.date}
+                            estate_id={reserve.house._id}
+                            user_id={user_id} />
                     )
                 )}
-                <HouseCard src="" />
+                <HouseCard />
             </div>
             <div className='flex justify-center'>
                 <nav aria-label="Page navigation">

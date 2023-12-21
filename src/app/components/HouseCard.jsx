@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { usePathname } from 'next/navigation'
 
-export default function HouseCard({ src, name, estate_id, user_id, deleteHouse }) {
+export default function HouseCard({ src, name, estate_id, user_id, reserve_date, deleteHouse }) {
     const path = usePathname()
 
     return (
@@ -18,7 +18,7 @@ export default function HouseCard({ src, name, estate_id, user_id, deleteHouse }
                     </div>
                 </Link>
                 <div className='flex justify-end items-center mr-4 my-2'>
-                    {src && path === `/dashboard/${user_id}` &&
+                    {!reserve_date && path === `/dashboard/${user_id}` ?
                         (<>
                             <Link href={`/dashboard/${user_id}/edit-estate/${estate_id}`}>
                                 <PencilSquareIcon className='h-6 w-6 mx-2 text-zinc-100 bg-yellow-700 hover:bg-yellow-600 rounded-md border-2 border-gray-700' />
@@ -26,7 +26,9 @@ export default function HouseCard({ src, name, estate_id, user_id, deleteHouse }
                             <button onClick={() => deleteHouse(user_id, estate_id)}>
                                 <TrashIcon className='h-6 w-6 text-zinc-100 bg-red-900 hover:bg-red-700 rounded-md border-2 border-gray-700' />
                             </button>
-                        </>)
+                        </>) : (
+                            <span className='text-md text-green-700 font-semibold'>{reserve_date}</span>
+                        )
                     }
                 </div>
             </div>

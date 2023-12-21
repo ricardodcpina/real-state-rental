@@ -1,14 +1,9 @@
 'use client'
 
 import { useState } from "react"
-import { toast, ToastContainer } from "react-toastify"
-import 'react-toastify/dist/ReactToastify.css';
 
-
-export default function LoginForm({ loginUser, createUser, error }) {
+export default function LoginForm({ loginUser, createUser }) {
     const [hasAccount, setHasAccount] = useState(true)
-
-    const notify = () => toast("Wow, so easy!")
 
     return (
         <div className="my-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950">
@@ -35,8 +30,7 @@ export default function LoginForm({ loginUser, createUser, error }) {
                 }
                 <div className="flex justify-end">
                     <input type="button" className="p-2 mr-2 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded" value="Cancel" />
-                    <input type="submit" onClick={notify} className="p-2 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded" value="Submit" />
-                     <ToastContainer />
+                    <input type="submit" className="p-2 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded" value="Submit" />
                 </div>
             </form>
         </div>

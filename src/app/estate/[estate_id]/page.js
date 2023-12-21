@@ -8,7 +8,7 @@ export default async function Page({ params }) {
     const user_id = cookies().get('user_id')?.value
     const estate_id = params.estate_id
 
-    async function getHouse() {
+    async function fetchEstate() {
         'use server'
 
         const data = await fetch(`http://localhost:8000/houses/${estate_id}`, {
@@ -19,7 +19,7 @@ export default async function Page({ params }) {
         const estate = await data.json()
         return estate
     }
-    const estate = await getHouse()
+    const estate = await fetchEstate()
 
     async function reserveEstate(formData) {
         'use server'
@@ -36,6 +36,7 @@ export default async function Page({ params }) {
             cache: 'no-store'
         })
 
+        
         revalidatePath('/')
         redirect(`/dashboard/${user_id}`)
     }
@@ -55,17 +56,19 @@ export default async function Page({ params }) {
                 </h1>
             </div>
             <div>
-                <form action={reserveEstate}>
-                    <div className='flex mt-3 justify-end'>
-                        <label htmlFor='reserve-date'>Date of Reserve:</label>
-                        <input type='date' name='date' id='reserve-date' className='rounded-md text-center ml-3' />
-                    </div>
-                    <div className='flex flex-col'>
-                        <button className='mt-3 p-3 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded-md '>
-                            Reserve
-                        </button>
-                    </div>
-                </form>
+                {estate.user !== user_id &&
+                    <form action={reserveEstate}>
+                        <div className='flex mt-3 justify-end'>
+                            <label htmlFor='reserve-date'>Date of Reserve:</label>
+                            <input type='date' name='date' id='reserve-date' className='rounded-md text-center ml-3' />
+                        </div>
+                        <div className='flex flex-col'>
+                            <button className='mt-3 p-3 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded-md '>
+                                Reserve
+                            </button>
+                        </div>
+                    </form>
+                }
             </div>
         </div>
     )

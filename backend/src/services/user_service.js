@@ -16,13 +16,13 @@ const validateFields = (input) => {
 
         let fieldValue = String(input[field])
         if (!fieldValue || fieldValue.trim() === '') {
+            let formattedField = field.replace(field[0], field[0].toUpperCase())
             throw {
-                message: `${field.toUpperCase()} is required`,
+                message: `${formattedField} is required`,
                 statusCode: 400
             }
         }
     }
-
     return true
 }
 

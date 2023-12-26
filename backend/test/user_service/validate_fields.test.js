@@ -14,7 +14,7 @@ describe('validateFields', () => {
         describe('when the field is undefined', () => {
             it('returns an error', () => {
                 const input = { username: '', email: 'test@test.com' }
-                const error = { message: 'USERNAME is required', statusCode: 400 }
+                const error = { message: 'Username is required', statusCode: 400 }
 
                 expect.assertions(1)
 
@@ -29,7 +29,7 @@ describe('validateFields', () => {
         describe('when the field is blank', () => {
             it('returns an error', () => {
                 const input = { username: '   ', email: 'test@test.com' }
-                const error = { message: 'USERNAME is required', statusCode: 400 }
+                const error = { message: 'Username is required', statusCode: 400 }
 
                 expect.assertions(1)
 

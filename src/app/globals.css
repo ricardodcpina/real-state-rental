@@ -2,21 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 59, 75, 72, 100;
-  --background-end-rgb: 11, 119, 101, 100;
+html {
+  height: 100%;
+  width: 100vw;
+  overflow-x: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 59, 75, 72, 100;
-    --background-end-rgb: 11, 119, 101, 100;
-  }
-} */
-
 body {
+  height: 100%;
   color: rgb(255, 255, 255);
-  background-color: rgb(7, 53, 47)
+  background-color: rgb(7, 53, 47);
 }

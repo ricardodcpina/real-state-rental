@@ -1,9 +1,17 @@
-import Container from "./components/Container";
+import Container from './components/Container';
 
-export default function Page() {
+export default function Page({ searchParams }) {
+  const currentCatalogPage = parseInt(searchParams.catalogPage);
+  const maxCostFilter = parseInt(searchParams.maxCost) || Infinity;
+  const estateLocation = searchParams.location;
+  const estateName = searchParams.name;
+
   return (
-    <div className="h-screen">
-      <Container />
-    </div>
-  )
+    <Container
+      currentPage={currentCatalogPage}
+      maxCost={maxCostFilter}
+      estateLocation={estateLocation}
+      estateName={estateName}
+    />
+  );
 }

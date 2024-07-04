@@ -1,21 +1,35 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
-const dashboardService = require('../services/dashboard_service')
-const { authentication } = require('../middlewares')
+const dashboardService = require('../services/dashboard_service');
+const { authentication } = require('../middlewares');
 
-router.get('/', authentication, async (req, res) => {
-    const { userId } = req
+router.get('/houses', authentication, async (req, res) => {
+  const { limit, skip } = req.query;
+  const { userId } = req;
 
-    try {
-        const houses = await dashboardService.listMyHouses(userId)
+  try {
+    const houses = await dashboardService.listMyHouses(userId, limit, skip);
 
-        res.status(200).json(houses)
-    }
-    catch (err) {
-        if (!err.statusCode) err.statusCode = 500
-        res.status(err.statusCode).json({ error: err.message })
-    }
-})
+    res.status(200).json(houses);
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    res.status(err.statusCode).json({ error: err.message });
+  }
+});
 
-module.exports = router
+router.get('/reserves', authentication, async (req, res) => {
+  const { limit, skip } = req.query;
+  const { userId } = req;
+
+  try {
+    const reserves = await dashboardService.listMyReserves(userId, limit, skip);
+
+    res.status(200).json(reserves);
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    res.status(err.statusCode).json({ error: err.message });
+  }
+});
+
+module.exports = router;

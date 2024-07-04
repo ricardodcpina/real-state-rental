@@ -1,37 +1,62 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { usePathname } from 'next/navigation'
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { usePathname } from 'next/navigation';
+import { deleteEstate } from '../lib/actions';
+import Link from 'next/link';
+import Image from 'next/image';
 
-export default function HouseCard({ src, name, estate_id, user_id, reserve_date, deleteHouse }) {
-    const path = usePathname()
+export default function HouseCard({
+  src,
+  name,
+  estate_id,
+  user_id,
+  reserve_date,
+  reserve_id,
+  estate_price,
+}) {
+  const path = usePathname();
 
-    return (
-        <>
-            <div className='h-[230px] w-[235px] m-4 shadow-lg hover:outline hover:outline-indigo-400 cursor-pointer overflow-hidden' >
-                <Link href={`/estate/${estate_id}`}>
-                    <div className='flex flex-col justify-center items-center'>
-                        {src && <Image src={src} width={300} height={250} alt='Estate picture' />}
-                        <h1 className='text-black mt-1'>{name}</h1>
-                    </div>
-                </Link>
-                <div className='flex justify-end items-center mr-4 my-2'>
-                    {!reserve_date && path === `/dashboard/${user_id}` ?
-                        (<>
-                            <Link href={`/dashboard/${user_id}/edit-estate/${estate_id}`}>
-                                <PencilSquareIcon className='h-6 w-6 mx-2 text-zinc-100 bg-yellow-700 hover:bg-yellow-600 rounded-md border-2 border-gray-700' />
-                            </Link>
-                            <button onClick={() => deleteHouse(user_id, estate_id)}>
-                                <TrashIcon className='h-6 w-6 text-zinc-100 bg-red-900 hover:bg-red-700 rounded-md border-2 border-gray-700' />
-                            </button>
-                        </>) : (
-                            <span className='text-md text-green-700 font-semibold'>{reserve_date}</span>
-                        )
-                    }
-                </div>
-            </div>
-        </>
-    )
+  return (
+    <div
+      className='h-[200px] w-[200px] m-4 shadow-lg overflow-hidden
+                hover:outline hover:outline-yellow-600 cursor-pointer transition-all rounded-xl'
+    >
+      <Link
+        href={
+          (reserve_id && `/estate/${estate_id}/reserve/${reserve_id}`) ||
+          (estate_id && `/estate/${estate_id}`) ||
+          ''
+        }
+      >
+        <div className='relative h-3/4'>{src && <Image src={src} fill alt='Estate picture' />}</div>
+      </Link>
+      <div className='flex justify-between items-center mr-4 my-4'>
+        <h1 className='text-black ml-4'>{name}</h1>
+        {!reserve_date && path === `/dashboard/${user_id}` ? (
+          <div className='flex justify-center items-center'>
+            <Link href={`/dashboard/${user_id}/edit-estate/${estate_id}`}>
+              <PencilSquareIcon
+                className='h-6 w-6 mx-2 rounded-md border-2 
+                                bg-yellow-700  hover:bg-yellow-600  border-gray-700 text-zinc-100'
+              />
+            </Link>
+            <button onClick={() => deleteEstate(estate_id)}>
+              <TrashIcon
+                className='h-6 w-6 rounded-md border-2 text-zinc-100 
+                                 bg-red-900 hover:bg-red-700  border-gray-700'
+              />
+            </button>
+          </div>
+        ) : (
+          reserve_date && (
+            <span className='text-md text-green-700 font-semibold'>{reserve_date}</span>
+          )
+        )}
+        {estate_price && path === '/' && (
+          <span className='text-md text-yellow-600 font-semibold'>${estate_price}/day</span>
+        )}
+      </div>
+    </div>
+  );
 }

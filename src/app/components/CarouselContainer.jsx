@@ -1,108 +1,72 @@
-import Link from 'next/link'
-import HouseCard from './HouseCard'
-import { PlusCircleIcon } from '@heroicons/react/24/outline'
-import { revalidatePath } from 'next/cache'
-import { cookies } from 'next/headers'
+import { PlusCircleIcon } from '@heroicons/react/24/outline';
+import { fetchMyEstates, fetchMyReserves } from '../lib/actions';
+import HouseCard from './HouseCard';
+import Link from 'next/link';
+import Paginator from './Paginator';
 
-export default async function CarouselContainer({ description }) {
-    const user_id = cookies().get('user_id')?.value
-    const token = cookies().get('user_token')?.value
+export default async function CarouselContainer({ user_id, description, currentPage }) {
+  let estates = null;
+  let reserves = null;
+  let totalEntries = 0;
 
-    async function deleteHouse(userId, houseId) {
-        'use server'
+  const pageLimit = 5;
+  const skipPages = (currentPage - 1) * pageLimit || 0;
 
-        await fetch(`http://localhost:8000/houses/${houseId}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
+  if (description === 'My Estates') {
+    totalEntries = (await fetchMyEstates()).length;
+    estates = await fetchMyEstates(pageLimit, skipPages);
+  } else {
+    totalEntries = (await fetchMyReserves()).length;
+    reserves = await fetchMyReserves(pageLimit, skipPages);
+  }
 
-        revalidatePath(`/dashboard/${user_id}`)
-    }
+  const totalPages = Math.ceil(totalEntries / pageLimit);
 
-    async function getMyHouses() {
-        'use server'
+  const blankCards =
+    (estates?.length > 0 && Array(pageLimit - estates?.length).fill(null)) ||
+    (reserves?.length > 0 && Array(pageLimit - reserves?.length).fill(null)) ||
+    Array(pageLimit).fill(null);
 
-        const data = await fetch('http://localhost:8000/dashboard', {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-
-        const myHouses = await data.json()
-
-        if (myHouses?.error) return
-
-        return myHouses
-    }
-    const houses = await getMyHouses()
-
-    async function fetchMyReserves() {
-        'use server'
-
-        const data = await fetch('http://localhost:8000/houses/reserves', {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-        })
-
-        const myReserves = await data.json()
-
-        if (myReserves?.error) return
-
-        return myReserves
-    }
-    const reserves = await fetchMyReserves()
-    revalidatePath(`/dashboard/${user_id}`)
-
-    return (
-        <div className="h-[385px] w-[1400px] mx-16 my-8 p-8 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg">
-            <div className='flex justify-between items-center font-bold text-slate-950'>
-                <h1 className='ml-4 text-xl'>{description}</h1>
-                {description === "My Estates" &&
-                    <Link href={`/dashboard/${user_id}/new-estate`}>
-                        <button className='flex mr-4 pr-2 bg-slate-500 hover:bg-slate-400 rounded-md '>
-                            <PlusCircleIcon className='h-7 w-7 mr-2 text-yellow-700 bg-black rounded-md border-2 border-gray-700' />New Entry
-                        </button>
-                    </Link>
-                }
-            </div>
-            <div className='flex mt-1 justify-start items-center'>
-                {description === "My Estates" ? (
-                    houses && houses.map((estate) =>
-                        <HouseCard
-                            key={estate._id}
-                            src={`/${estate.thumbnail}`}
-                            name={estate.description}
-                            estate_id={estate._id}
-                            user_id={user_id}
-                            deleteHouse={deleteHouse}
-                        />
-                    )
-                ) : (
-                    reserves && reserves.map(reserve =>
-                        <HouseCard key={reserve._id}
-                            src={`/${reserve.house.thumbnail}`}
-                            name={reserve.house.description}
-                            reserve_date={reserve.date}
-                            estate_id={reserve.house._id}
-                            user_id={user_id} />
-                    )
-                )}
-                <HouseCard />
-            </div>
-            <div className='flex justify-center'>
-                <nav aria-label="Page navigation">
-                    <ul className="inline-flex">
-                        <li><button className="h-9 px-5 text-black transition-colors duration-150 rounded-l-lg bg-white focus:shadow-outline hover:bg-indigo-200">
-                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" fillRule="evenodd"></path></svg></button>
-                        </li>
-                        <li><button className="h-9 px-5 text-white transition-colors duration-150 focus:shadow-outline bg-zinc-700">1</button></li>
-                        <li><button className="h-9 px-5 text-black transition-colors duration-150 focus:shadow-outline hover:bg-indigo-200">2</button></li>
-                        <li><button className="h-9 px-5 text-black transition-colors duration-150 focus:shadow-outline hover:bg-indigo-200">3</button></li>
-                        <li><button className="h-9 px-5 text-black transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline hover:bg-indigo-200">
-                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" fillRule="evenodd"></path></svg></button>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    )
-} 
+  return (
+    <div className='w-[90%] ml-16 my-8 px-8 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg'>
+      <div className='flex justify-between items-center font-bold text-slate-950'>
+        <h1 className='ml-4 text-2xl'>{description}</h1>
+        {description === 'My Estates' && (
+          <Link href={`/dashboard/${user_id}/new-estate`}>
+            <button className='flex mr-4 pr-2 bg-slate-500 hover:bg-slate-400 rounded-md '>
+              <PlusCircleIcon className='h-7 w-7 mr-2 text-yellow-700 bg-black rounded-md border-2 border-gray-700' />
+              New Entry
+            </button>
+          </Link>
+        )}
+      </div>
+      <div className='flex mt-1 justify-between items-center'>
+        {description === 'My Estates'
+          ? estates &&
+            estates.map((estate) => (
+              <HouseCard
+                key={estate._id}
+                src={`/images/${estate.thumbnail}`}
+                name={estate.description}
+                estate_id={estate._id}
+                user_id={user_id}
+              />
+            ))
+          : reserves &&
+            reserves.map((reserve) => (
+              <HouseCard
+                key={reserve._id}
+                src={`/images/${reserve.house.thumbnail}`}
+                name={reserve.house.description}
+                reserve_date={reserve.date}
+                estate_id={reserve.house._id}
+                user_id={user_id}
+                reserve_id={reserve._id}
+              />
+            ))}
+        {blankCards.length > 0 && blankCards.map((_, index) => <HouseCard key={index} />)}
+      </div>
+      <Paginator totalPages={totalPages} type={description === 'My Estates' ? 'estate' : 'reserve'} />
+    </div>
+  );
+}

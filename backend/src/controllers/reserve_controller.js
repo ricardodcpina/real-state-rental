@@ -20,20 +20,6 @@ router.post('/:id/reserves', authentication, async (req, res) => {
     }
 })
 
-router.get('/reserves', authentication, async (req, res) => {
-    const { userId } = req
-
-    try {
-        const reserves = await reserveService.listMyReserves(userId)
-
-        res.status(200).json(reserves)
-    }
-    catch (err) {
-        if (!err.statusCode) err.statusCode = 500
-        res.status(err.statusCode).json({ error: err.message })
-    }
-})
-
 router.delete('/reserves/:id', authentication, async (req, res) => {
     const { userId } = req
     const reserveId = req.params.id

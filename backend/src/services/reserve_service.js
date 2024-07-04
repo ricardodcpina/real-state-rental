@@ -30,15 +30,6 @@ exports.createReserve = async (userId, houseId, date) => {
     return reserve
 }
 
-exports.listMyReserves = async (userId) => {
-
-    const reserves = await Reserve.find({ user: userId })
-
-    await Reserve.populate(reserves, 'house')
-
-    return reserves
-}
-
 exports.cancelReserve = async (userId, reserveId) => {
 
     // Checks Object ID validity

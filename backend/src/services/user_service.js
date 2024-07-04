@@ -1,11 +1,11 @@
-require("dotenv").config();
+require('dotenv').config();
 
-const { isValidObjectId } = require("mongoose");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const { isValidObjectId } = require('mongoose');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-const { User } = require("../models");
-const errors = require("../errors");
+const { User } = require('../models');
+const errors = require('../errors');
 
 ////////////////////////  AUXILIARY FUNCTIONS  /////////////////////////
 
@@ -13,7 +13,7 @@ const validateFields = (input) => {
   // Check for undefined and blank fields
   for (let field in input) {
     let fieldValue = String(input[field]);
-    if (!fieldValue || fieldValue.trim() === "") {
+    if (!fieldValue || fieldValue.trim() === '') {
       let formattedField = field.replace(field[0], field[0].toUpperCase());
       throw {
         message: `${formattedField} is required`,
@@ -34,7 +34,7 @@ const verifyEmail = async (email) => {
   if (user) throw errors.emailNotUnique;
 
   // Check email for correct formatting
-  let regex = RegExp("[a-z0-9]+@[a-z]+.[a-z]{2,3}");
+  let regex = RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
 
   if (!regex.test(email)) throw errors.emailnotFormatted;
 
@@ -47,7 +47,7 @@ const hashPassword = (password) => {
 
 const generateToken = (userId) => {
   return jwt.sign({ sub: userId }, process.env.HASH_SECRET, {
-    expiresIn: "180s",
+    expiresIn: '180s',
   });
 };
 
@@ -84,8 +84,7 @@ exports.authUser = async (username, password) => {
   if (!user) throw errors.notAuthenticated;
 
   // Apply encryption and check authenticity
-  if ((await hashPassword(password)) !== user.password)
-    throw errors.notAuthenticated;
+  if ((await hashPassword(password)) !== user.password) throw errors.notAuthenticated;
 
   // Authenticate
   const token = generateToken(user._id);
@@ -122,11 +121,7 @@ exports.updateUser = async (id, input) => {
   }
 
   // Update user data on database
-  const updatedUser = await User.findByIdAndUpdate(
-    { _id: id },
-    { ...input },
-    { new: true }
-  );
+  const updatedUser = await User.findByIdAndUpdate({ _id: id }, { ...input }, { new: true });
 
   return updatedUser;
 };

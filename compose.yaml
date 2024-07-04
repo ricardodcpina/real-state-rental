@@ -1,7 +1,7 @@
 services:
   mongo:
     image: mongo:latest
-    container_name: "mongo"
+    container_name: 'mongo'
     ports:
       - 27017:27017
 
@@ -9,5 +9,9 @@ services:
     image: ricardodcpina/real-estate-rental
     ports:
       - 3000:3000
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/real-state-rental
+      - SALT=$2b$10$4K8VYfIHxZEatcUCWaklJO
+      - HASH_SECRET=08b9a769-e2bc-46fa-9f10-7962804ecee8
     depends_on:
       - mongo

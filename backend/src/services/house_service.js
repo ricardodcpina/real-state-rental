@@ -64,6 +64,8 @@ exports.findHouse = async (houseId) => {
   const house = await House.findOne({ _id: houseId });
   if (!house) throw errors.invalidID;
 
+  await House.populate(house, 'reserve')
+
   return house;
 };
 

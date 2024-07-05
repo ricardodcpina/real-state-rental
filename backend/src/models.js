@@ -1,7 +1,7 @@
-require("dotenv").config();
+require('dotenv').config();
 const PORT = process.env.PORT || 8000;
 
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
 
 const UserSchema = new Schema({
   username: String,
@@ -10,7 +10,7 @@ const UserSchema = new Schema({
   deletedAt: Date,
 });
 
-exports.User = model("User", UserSchema);
+exports.User = model('User', UserSchema);
 
 const HouseSchema = new Schema(
   {
@@ -21,7 +21,11 @@ const HouseSchema = new Schema(
     available: Boolean,
     user: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
+    },
+    reserve: {
+      type: Schema.Types.ObjectId,
+      ref: 'Reserve',
     },
   },
   {
@@ -29,22 +33,22 @@ const HouseSchema = new Schema(
   }
 );
 
-HouseSchema.virtual("thumbnail_url").get(function () {
+HouseSchema.virtual('thumbnail_url').get(function () {
   return `http://localhost:${PORT}/files/${this.thumbnail}`;
 });
 
-exports.House = model("House", HouseSchema);
+exports.House = model('House', HouseSchema);
 
 const ReserveSchema = new Schema({
   date: String,
   user: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
   house: {
     type: Schema.Types.ObjectId,
-    ref: "House",
+    ref: 'House',
   },
 });
 
-exports.Reserve = model("Reserve", ReserveSchema);
+exports.Reserve = model('Reserve', ReserveSchema);

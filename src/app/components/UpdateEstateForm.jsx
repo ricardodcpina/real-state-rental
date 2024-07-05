@@ -6,16 +6,19 @@ import { useFormState } from 'react-dom';
 import { updateEstate } from '@/app/lib/estateActions';
 
 export default function UpdateEstateForm({ estate }) {
-  const initialState = {
+  const initialErrorState = {
     message: null,
   };
 
-  const [updateEstateState, updateEstateAction] = useFormState(updateEstate, initialState);
+  const initialFormFields = {
+    description: estate.description,
+    location: estate.location,
+    price: estate.price,
+    image: null,
+  };
 
-  const [estateDescription, setEstateDescription] = useState(estate.description);
-  const [estateLocation, setEstateLocation] = useState(estate.location);
-  const [estatePrice, setEstatePrice] = useState(estate.price);
-  const [estateImage, setEstateImage] = useState(null);
+  const [updateEstateState, updateEstateAction] = useFormState(updateEstate, initialErrorState);
+  const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
     <div className='container m-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950'>
@@ -23,22 +26,30 @@ export default function UpdateEstateForm({ estate }) {
         <h1 className='text-2xl mb-4'>Edit Estate</h1>
 
         <Image
-          src={estateImage || `/images/${estate.thumbnail}`}
+          src={formFields.image || `/images/${estate.thumbnail}`}
           width={400}
           height={500}
           alt='Picture of estate'
         />
 
-        <label className='mt-4' htmlFor='estate-picture'>
-          Picture
+        <label
+          className=' my-4 p-2 mr-auto bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
+          htmlFor='estate-picture'
+        >
+          Change Image
         </label>
         <input
-          className='mb-4'
           id='estate-picture'
           name='thumbnail'
           type='file'
           accept='.jpg, .jpeg, .png'
-          onChange={(e) => setEstateImage(URL.createObjectURL(e.target.files[0]))}
+          onChange={(e) =>
+            setFormFields({
+              ...formFields,
+              image: URL.createObjectURL(e.target.files[0]),
+            })
+          }
+          hidden
         />
 
         <label htmlFor='estate-name'>Estate Name</label>
@@ -47,8 +58,8 @@ export default function UpdateEstateForm({ estate }) {
           id='estate-name'
           name='description'
           type='text'
-          value={estateDescription}
-          onChange={(e) => setEstateDescription(e.target.value)}
+          value={formFields.description}
+          onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
         />
 
         <label htmlFor='estate-location'>Location</label>
@@ -57,8 +68,8 @@ export default function UpdateEstateForm({ estate }) {
           id='estate-location'
           name='location'
           type='text'
-          value={estateLocation}
-          onChange={(e) => setEstateLocation(e.target.value)}
+          value={formFields.location}
+          onChange={(e) => setFormFields({ ...formFields, location: e.target.value })}
         />
 
         <label htmlFor='estate-price'>Price in USD</label>
@@ -67,9 +78,8 @@ export default function UpdateEstateForm({ estate }) {
           id='estate-price'
           name='price'
           type='number'
-          step='100.00'
-          value={estatePrice}
-          onChange={(e) => setEstatePrice(e.target.value)}
+          value={formFields.price}
+          onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
         />
 
         <input id='estate-id' name='estate-id' type='hidden' value={estate._id} />
@@ -104,17 +114,19 @@ export default function UpdateEstateForm({ estate }) {
           <h1 className='text-red-600 mb-3'>{updateEstateState.message}</h1>
         )}
         <div className='flex justify-end'>
-          <input
+          <button
             type='reset'
             className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
-            value='Discard changes'
-            onClick={() => setEstateImage(`/${estate.thumbnail}`)}
-          />
-          <input
+            onClick={() => setFormFields({ ...initialFormFields })}
+          >
+            Discard
+          </button>
+          <button
             type='submit'
             className='p-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
-            value='Submit changes'
-          />
+          >
+            Submit Changes
+          </button>
         </div>
       </form>
     </div>

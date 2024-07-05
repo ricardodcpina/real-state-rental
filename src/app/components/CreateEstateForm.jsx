@@ -6,31 +6,49 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 export default function CreateEstateForm({ user_id }) {
-  const initialState = {
+  const initialErrorState = {
     message: null,
   };
 
-  const [estateImage, setEstateImage] = useState(null);
-  const [createEstateState, createEstateAction] = useFormState(createEstate, initialState);
+  const initialFormFields = {
+    description: '',
+    location: '',
+    price: '',
+    image: null,
+    available: true,
+  };
+
+  const [createEstateState, createEstateAction] = useFormState(createEstate, initialErrorState);
+  const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
-    <div className='container m-16 w-[30%] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950'>
+    <div className='container m-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950'>
       <form className='flex flex-col' action={createEstateAction}>
         <h1 className='text-2xl mb-4'>Add Estate</h1>
 
-        {estateImage && (
-          <Image src={estateImage} width={400} height={500} alt='Picture of estate' />
+        {formFields.image && (
+          <Image src={formFields.image} width={400} height={500} alt='Picture of estate' />
         )}
 
-        <label htmlFor='thumbnail'>Picture</label>
+        <label
+          className=' my-4 p-2 mr-auto bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
+          htmlFor='estate-picture'
+        >
+          Insert Image
+        </label>
         <input
-          className='mb-4'
           id='estate-picture'
           name='thumbnail'
           type='file'
           accept='.jpg, .jpeg, .png'
-          onChange={(e) => setEstateImage(URL.createObjectURL(e.target.files[0]))}
+          onChange={(e) =>
+            setFormFields({
+              ...formFields,
+              image: URL.createObjectURL(e.target.files[0]),
+            })
+          }
           required
+          hidden
         />
         <label htmlFor='estate-name'>Estate Name</label>
         <input
@@ -38,6 +56,8 @@ export default function CreateEstateForm({ user_id }) {
           id='estate-name'
           name='description'
           type='text'
+          value={formFields.description}
+          onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
           required
         />
         <label htmlFor='estate-location'>Location</label>
@@ -46,6 +66,8 @@ export default function CreateEstateForm({ user_id }) {
           id='estate-location'
           name='location'
           type='text'
+          value={formFields.location}
+          onChange={(e) => setFormFields({ ...formFields, location: e.target.value })}
           required
         />
         <label htmlFor='price'>Price (USD)</label>
@@ -54,6 +76,8 @@ export default function CreateEstateForm({ user_id }) {
           id='estate-price'
           name='price'
           type='number'
+          value={formFields.price}
+          onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
           required
         />
         <input id='user-id' name='user-id' type='hidden' value={user_id} />
@@ -84,16 +108,19 @@ export default function CreateEstateForm({ user_id }) {
           <h1 className='text-red-600 mb-3'>{createEstateState.message}</h1>
         )}
         <div className='flex justify-end'>
-          <input
+          <button
             type='reset'
-            className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 rounded cursor-pointer'
-            value='Cancel'
-          />
-          <input
+            className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
+            onClick={() => setFormFields({ ...initialFormFields })}
+          >
+            Discard
+          </button>
+          <button
             type='submit'
             className='p-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 rounded cursor-pointer'
-            value='Submit estate'
-          />
+          >
+            Submit Estate
+          </button>
         </div>
       </form>
     </div>

@@ -29,7 +29,9 @@ export default function HouseCard({
           ''
         }
       >
-        <div className='relative h-3/4'>{src && <Image src={src} fill sizes="200px" priority={true} alt='Estate picture' />}</div>
+        <div className='relative h-3/4'>
+          {src && <Image src={src} fill sizes='200px' priority={true} alt='Estate picture' />}
+        </div>
       </Link>
       <div className='flex justify-between items-center mr-4 my-4'>
         <h1 className='text-black ml-4'>{name}</h1>
@@ -38,13 +40,13 @@ export default function HouseCard({
             <Link href={`/dashboard/${user_id}/edit-estate/${estate_id}`}>
               <PencilSquareIcon
                 className='h-6 w-6 mx-2 rounded-md border-2 
-                                bg-yellow-700  hover:bg-yellow-600  border-gray-700 text-zinc-100'
+                                bg-yellow-700  hover:bg-yellow-600  border-gray-700 text-zinc-100 transition-colors duration-500'
               />
             </Link>
             <button onClick={() => deleteEstate(estate_id)}>
               <TrashIcon
                 className='h-6 w-6 rounded-md border-2 text-zinc-100 
-                                 bg-red-900 hover:bg-red-700  border-gray-700'
+                                 bg-red-900 hover:bg-red-700  border-gray-700 transition-colors duration-500'
               />
             </button>
           </div>

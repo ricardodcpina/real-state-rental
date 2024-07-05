@@ -24,7 +24,7 @@ export default function Paginator({ totalPages, type }) {
         <ul className='inline-flex'>
           <li>
             <button
-              className={`h-8 px-5 text-black transition-colors duration-150 rounded-l-lg bg-white focus:shadow-outline
+              className={`h-8 px-5 text-black transition-colors duration-500 rounded-l-lg bg-white focus:shadow-outline
                 ${currentPage === 1 ? 'bg-zinc-600 text-white' : 'text-black hover:bg-indigo-200'}`}
               disabled={currentPage <= 1}
               onClick={() => {
@@ -45,7 +45,7 @@ export default function Paginator({ totalPages, type }) {
           {pages.map((page) => (
             <li key={page}>
               <button
-                className={`h-8 px-5 transition-colors duration-150 focus:shadow-outline ${
+                className={`h-8 px-5 transition-colors duration-500 focus:shadow-outline ${
                   page === currentPage
                     ? 'bg-zinc-500 text-white cursor-default'
                     : 'text-black hover:bg-indigo-200'
@@ -62,7 +62,7 @@ export default function Paginator({ totalPages, type }) {
           ))}
           <li>
             <button
-              className={`h-8 px-5 text-black transition-colors duration-150 bg-white rounded-r-lg focus:shadow-outline ${
+              className={`h-8 px-5 text-black transition-colors duration-500 bg-white rounded-r-lg focus:shadow-outline ${
                 currentPage === totalPages
                   ? 'bg-zinc-600 text-white'
                   : 'text-black hover:bg-indigo-200'

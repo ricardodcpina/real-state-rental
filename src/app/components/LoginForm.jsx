@@ -28,7 +28,7 @@ export default function LoginForm() {
           <input
             type='button'
             onClick={() => setHasAccount(!hasAccount)}
-            className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded'
+            className='p-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
             value={hasAccount ? 'Sign Up' : 'Login'}
           />
         </div>
@@ -69,12 +69,12 @@ export default function LoginForm() {
         <div className='flex justify-end'>
           <input
             type='reset'
-            className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded'
+            className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
             value='Cancel'
           />
           <input
             type='submit'
-            className='p-2 bg-slate-500 hover:bg-slate-400 cursor-pointer rounded'
+            className='p-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
             value='Submit'
           />
         </div>

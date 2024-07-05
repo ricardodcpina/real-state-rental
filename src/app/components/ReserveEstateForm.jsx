@@ -5,8 +5,6 @@ import { cancelReserve, reserveEstate } from '../lib/actions';
 import Image from 'next/image';
 
 export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
-  console.log(estate);
-
   const initialState = {
     message: null,
   };
@@ -38,7 +36,9 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
       <div>
         {reserve_id ? (
           <div className='flex flex-col pt-3 items-center'>
-            <h3 className='text-lg text-green-700 font-bold'>Reservation Date: {estate.reserve.date}</h3>
+            <h3 className='text-lg text-green-700 font-bold'>
+              Reservation Date: {estate.reserve.date}
+            </h3>
             <button
               onClick={() => cancelReserve(reserve_id)}
               className='mt-3 p-3 w-full bg-slate-500 hover:bg-red-800 cursor-pointer rounded-md transition-colors duration-500'
@@ -50,8 +50,10 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
           user_id &&
           user_id !== estate.user && (
             <form action={reserveEstateAction}>
-              <div className='flex mt-3 justify-end'>
-                <label htmlFor='reserve-date'>Date of Reserve:</label>
+              <div className='flex pt-3 justify-center'>
+                <label htmlFor='reserve-date' className='text-lg font-bold'>
+                  Date of Reserve:
+                </label>
                 <input
                   name='date'
                   id='reserve-date'

@@ -64,7 +64,7 @@ export default function FilterMenu() {
         <div className='flex justify-center font-bold text-slate-950'>
           <button
             type='button'
-            className='flex items-center bg-slate-600 hover:bg-slate-400 mt-5 w-36 rounded-md'
+            className='flex items-center bg-slate-600 hover:bg-slate-400 mt-5 w-36 rounded-md transition-colors duration-500'
             onClick={applyFilters}
           >
             <MagnifyingGlassCircleIcon className='h-7 w-7 mr-5 text-yellow-700 bg-black rounded-md border-2 border-gray-700' />

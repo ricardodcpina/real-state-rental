@@ -33,7 +33,7 @@ export default async function CarouselContainer({ user_id, description, currentP
         <h1 className='ml-4 text-2xl'>{description}</h1>
         {description === 'My Estates' && (
           <Link href={`/dashboard/${user_id}/new-estate`}>
-            <button className='flex mr-4 pr-2 bg-slate-500 hover:bg-slate-400 rounded-md '>
+            <button className='flex mr-4 pr-2 bg-slate-500 hover:bg-slate-400 rounded-md transition-colors duration-500'>
               <PlusCircleIcon className='h-7 w-7 mr-2 text-yellow-700 bg-black rounded-md border-2 border-gray-700' />
               New Entry
             </button>
@@ -66,7 +66,10 @@ export default async function CarouselContainer({ user_id, description, currentP
             ))}
         {blankCards.length > 0 && blankCards.map((_, index) => <HouseCard key={index} />)}
       </div>
-      <Paginator totalPages={totalPages} type={description === 'My Estates' ? 'estate' : 'reserve'} />
+      <Paginator
+        totalPages={totalPages}
+        type={description === 'My Estates' ? 'estate' : 'reserve'}
+      />
     </div>
   );
 }

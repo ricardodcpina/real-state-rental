@@ -11,7 +11,7 @@ services:
       - 3000:3000
     environment:
       - MONGO_URL=mongodb://mongo:27017/real-state-rental
-      - SALT=$2b$10$4K8VYfIHxZEatcUCWaklJO
+      - SALT=$2b$10$4qgHHvn7eqz4F7VOPvaSIe
       - HASH_SECRET=08b9a769-e2bc-46fa-9f10-7962804ecee8
     depends_on:
       - mongo

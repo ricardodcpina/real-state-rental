@@ -86,12 +86,12 @@ export default function CreateEstateForm({ user_id }) {
         <div className='flex justify-end'>
           <input
             type='reset'
-            className='p-2 mr-2 bg-slate-400 rounded cursor-pointer'
+            className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 rounded cursor-pointer'
             value='Cancel'
           />
           <input
             type='submit'
-            className='p-2 bg-slate-400 rounded cursor-pointer'
+            className='p-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 rounded cursor-pointer'
             value='Submit estate'
           />
         </div>

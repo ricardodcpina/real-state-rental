@@ -29,7 +29,7 @@ export default function HouseCard({
           ''
         }
       >
-        <div className='relative h-3/4'>{src && <Image src={src} fill alt='Estate picture' />}</div>
+        <div className='relative h-3/4'>{src && <Image src={src} fill sizes="200px" priority={true} alt='Estate picture' />}</div>
       </Link>
       <div className='flex justify-between items-center mr-4 my-4'>
         <h1 className='text-black ml-4'>{name}</h1>

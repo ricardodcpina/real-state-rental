@@ -2,13 +2,12 @@ import { fetchEstate } from '@/app/lib/actions'
 import { cookies } from 'next/headers'
 import ReserveEstateForm from '@/app/components/ReserveEstateForm'
 
-export default async function Page({ params }) {
+export default async function ReservePage({ params }) {
     const { estate_id, reserve_id } = params
-    const user_id = cookies().get('user_id')?.value
-
+    const loggedUserId = cookies().get('user_id')?.value
     const estate = await fetchEstate(estate_id)
 
     return (
-        <ReserveEstateForm estate={estate} user_id={user_id} reserve_id={reserve_id} />
+        <ReserveEstateForm estate={estate} user_id={loggedUserId} reserve_id={reserve_id} />
     )
 }

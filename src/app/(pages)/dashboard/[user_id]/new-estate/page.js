@@ -1,9 +1,14 @@
-import CreateEstateForm from "@/app/components/CreateEstateForm";
+import CreateEstateForm from '@/app/components/CreateEstateForm';
+import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
 
-export default async function Page({ params }) {
-    const { user_id } = params
+export default async function NewEstatePage({ params }) {
+  const { user_id } = params;
+  const loggedUserId = cookies().get('user_id')?.value;
 
-    return (
-        <CreateEstateForm user_id={user_id} />
-    )
+  if (user_id !== loggedUserId) {
+    notFound();
+  }
+
+  return <CreateEstateForm user_id={user_id} />;
 }

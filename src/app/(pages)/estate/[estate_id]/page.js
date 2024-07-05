@@ -1,14 +1,17 @@
-import { fetchEstate } from '@/app/lib/actions'
-import { cookies } from 'next/headers'
-import ReserveEstateForm from '@/app/components/ReserveEstateForm'
+import { cookies } from 'next/headers';
+import { notFound } from 'next/navigation';
+import { fetchEstate } from '@/app/lib/actions';
 
-export default async function Page({ params }) {
-    const { estate_id } = params
-    const user_id = cookies().get('user_id')?.value
+import ReserveEstateForm from '@/app/components/ReserveEstateForm';
 
-    const estate = await fetchEstate(estate_id)
+export default async function EstatePage({ params }) {
+  const { estate_id } = params;
+  const loggedUserId = cookies().get('user_id')?.value;
+  const estate = await fetchEstate(estate_id);
 
-    return (
-        <ReserveEstateForm estate={estate} user_id={user_id} />
-    )
+  if (estate.error === 'Invalid ID') {
+    notFound();
+  }
+
+  return <ReserveEstateForm estate={estate} user_id={loggedUserId} />;
 }

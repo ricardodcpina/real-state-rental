@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { useFormState } from 'react-dom';
-import { updateEstate } from '../lib/actions';
+import { updateEstate } from '@/app/lib/estateActions';
 
 export default function UpdateEstateForm({ estate }) {
   const initialState = {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormState } from 'react-dom';
-import { createEstate } from '../lib/actions';
+import { createEstate } from '@/app/lib/estateActions';
 import { useState } from 'react';
 import Image from 'next/image';
 

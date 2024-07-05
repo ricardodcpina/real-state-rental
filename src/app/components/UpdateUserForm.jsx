@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormState } from 'react-dom';
-import { updateUser, deleteUser } from '../lib/actions';
+import { updateUser, deleteUser } from '../lib/userActions';
 
 export default function UpdateUserForm({ user }) {
   const user_id = user._id;

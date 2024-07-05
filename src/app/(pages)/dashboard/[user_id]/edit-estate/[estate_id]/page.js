@@ -1,6 +1,5 @@
 import UpdateEstateForm from '@/app/components/UpdateEstateForm';
-import { fetchEstate } from '@/app/lib/actions';
-import { cookies } from 'next/headers';
+import { fetchEstate } from '@/app/lib/estateActions';
 import { notFound } from 'next/navigation';
 
 export default async function EditStatePage({ params }) {

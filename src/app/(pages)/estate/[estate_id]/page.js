@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { fetchEstate } from '@/app/lib/actions';
+import { fetchEstate } from '@/app/lib/estateActions';
 
 import ReserveEstateForm from '@/app/components/ReserveEstateForm';
 

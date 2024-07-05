@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
-import { loginUser, createUser } from '../lib/actions';
+import { loginUser, createUser } from '../lib/userActions';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {

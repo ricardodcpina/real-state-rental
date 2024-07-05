@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormState } from 'react-dom';
-import { cancelReserve, reserveEstate } from '../lib/actions';
+import { cancelReserve, reserveEstate } from '@/app/lib/reserveActions';
 import Image from 'next/image';
 
 export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
@@ -37,7 +37,7 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
         {reserve_id ? (
           <div className='flex flex-col pt-3 items-center'>
             <h3 className='text-lg text-green-700 font-bold'>
-              Reservation Date: {estate.reserve.date}
+              Reservation Date: {estate?.reserve?.date}
             </h3>
             <button
               onClick={() => cancelReserve(reserve_id)}

@@ -2,7 +2,7 @@
 
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
-import { deleteEstate } from '../lib/actions';
+import { deleteEstate } from '@/app/lib/estateActions';
 import Link from 'next/link';
 import Image from 'next/image';
 

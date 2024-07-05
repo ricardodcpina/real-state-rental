@@ -1,5 +1,5 @@
 import UpdateUserForm from '@/app/components/UpdateUserForm';
-import { fetchUser } from '@/app/lib/actions';
+import { fetchUser } from '@/app/lib/userActions';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 

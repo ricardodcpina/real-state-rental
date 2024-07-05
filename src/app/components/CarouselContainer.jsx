@@ -1,5 +1,5 @@
 import { PlusCircleIcon } from '@heroicons/react/24/outline';
-import { fetchMyEstates, fetchMyReserves } from '../lib/actions';
+import { fetchMyEstates, fetchMyReserves } from '@/app/lib/dashboardActions';
 import HouseCard from './HouseCard';
 import Link from 'next/link';
 import Paginator from './Paginator';

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { logoutUser } from '../lib/actions';
+import { logoutUser } from '../lib/userActions';
 import { cookies } from 'next/headers';
 
 export default function NavBar() {

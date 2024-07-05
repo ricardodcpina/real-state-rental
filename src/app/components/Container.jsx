@@ -1,6 +1,6 @@
 import Paginator from './Paginator';
 import HouseCard from './HouseCard';
-import { fetchEstates } from '../lib/actions';
+import { fetchEstates } from '@/app/lib/estateActions';
 
 export default async function Container({ currentPage, maxCost, estateLocation, estateName }) {
   const pageLimit = 10;

@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormState } from 'react-dom'
-import { reserveEstate } from '../lib/actions'
+import { reserveEstate } from '@/app/lib/reserveActions'
 import Image from 'next/image'
 
 export default function ReserveEstateForm({ estate, user_id }) {

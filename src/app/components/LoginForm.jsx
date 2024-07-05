@@ -21,7 +21,7 @@ export default function LoginForm() {
   const [createUserState, createUserAction] = useFormState(createUser, initialState);
 
   return (
-    <section className='w-[25%] h-1/3 ml-16 my-8 px-8 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950'>
+    <section className='w-[25%] h-1/3 ml-16 my-8 px-4 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950'>
       <form className='flex flex-col' action={hasAccount ? loginUserAction : createUserAction}>
         <div className='flex flex-grow justify-between items-baseline'>
           <h1 className='text-2xl mb-4'>{hasAccount ? 'Login' : 'Register Account'}</h1>

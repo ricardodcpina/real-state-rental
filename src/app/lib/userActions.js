@@ -20,7 +20,7 @@ export async function loginUser(prevState, formData) {
     return { error: credentials.error };
   }
 
-  const timeLapse = 1000 * 180;
+  const timeLapse = 1000 * 30;
   cookies().set('user_token', credentials.token, { expires: Date.now() + timeLapse, path: '/' });
   cookies().set('user_id', credentials.userId, { expires: Date.now() + timeLapse, path: '/' });
   redirect(`/dashboard/${credentials.userId}`);
@@ -33,7 +33,7 @@ export async function createUser(prevState, formData) {
   const confirmPassword = formData.get('confirm-password');
 
   if (confirmPassword !== password) {
-    return { message: 'Password confirmation does not match!' };
+    return { error: 'Password confirmation does not match!' };
   }
 
   const data = await fetch('http://localhost:8000/users', {
@@ -48,7 +48,7 @@ export async function createUser(prevState, formData) {
 
   const user = await data.json();
   if (user.error) {
-    return { message: user.error };
+    return { error: user.error };
   }
 
   await loginUser(null, formData);
@@ -80,7 +80,7 @@ export async function updateUser(prevState, formData) {
   const body = { username };
 
   if (confirmNewPassword !== newPassword) {
-    return { message: 'Password confirmation does not match!' };
+    return { error: 'Password confirmation does not match!' };
   }
 
   if (newPassword) {
@@ -98,8 +98,11 @@ export async function updateUser(prevState, formData) {
   });
 
   const user = await data.json();
-  if (user?.error) {
-    return { message: user.error };
+
+  if (user?.error === 'Invalid credentials') {
+    redirect('/login');
+  } else if (user?.error) {
+    return { error: user.error };
   }
 
   revalidatePath(`/dashboard/${user_id}/settings`);
@@ -114,9 +117,10 @@ export async function deleteUser(user_id) {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  const user = await data.json();
-  if (user?.error) {
-    return { message: user.error };
+  if (user?.error === 'Invalid credentials') {
+    redirect('/login');
+  } else if (user?.error) {
+    return { error: user.error };
   }
 
   await logoutUser();

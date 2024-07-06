@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 export default function CreateEstateForm({ user_id }) {
   const initialErrorState = {
-    message: null,
+    error: null,
   };
 
   const initialFormFields = {
@@ -47,7 +47,6 @@ export default function CreateEstateForm({ user_id }) {
               image: URL.createObjectURL(e.target.files[0]),
             })
           }
-          required
           hidden
         />
         <label htmlFor='estate-name'>Estate Name</label>
@@ -58,7 +57,6 @@ export default function CreateEstateForm({ user_id }) {
           type='text'
           value={formFields.description}
           onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
-          required
         />
         <label htmlFor='estate-location'>Location</label>
         <input
@@ -68,7 +66,6 @@ export default function CreateEstateForm({ user_id }) {
           type='text'
           value={formFields.location}
           onChange={(e) => setFormFields({ ...formFields, location: e.target.value })}
-          required
         />
         <label htmlFor='price'>Price (USD)</label>
         <input
@@ -78,7 +75,6 @@ export default function CreateEstateForm({ user_id }) {
           type='number'
           value={formFields.price}
           onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
-          required
         />
         <input id='user-id' name='user-id' type='hidden' value={user_id} />
         <div>
@@ -104,8 +100,8 @@ export default function CreateEstateForm({ user_id }) {
             No
           </label>
         </div>
-        {createEstateState.message && (
-          <h1 className='text-red-600 mb-3'>{createEstateState.message}</h1>
+        {createEstateState.error && (
+          <h1 className='text-red-600 mb-3'>{createEstateState.error}</h1>
         )}
         <div className='flex justify-end'>
           <button

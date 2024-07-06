@@ -7,7 +7,7 @@ import { updateEstate } from '@/app/lib/estateActions';
 
 export default function UpdateEstateForm({ estate }) {
   const initialErrorState = {
-    message: null,
+    error: null,
   };
 
   const initialFormFields = {
@@ -110,8 +110,8 @@ export default function UpdateEstateForm({ estate }) {
             No
           </label>
         </div>
-        {updateEstateState.message && (
-          <h1 className='text-red-600 mb-3'>{updateEstateState.message}</h1>
+        {updateEstateState.error && (
+          <h1 className='text-red-600 mb-3'>{updateEstateState.error}</h1>
         )}
         <div className='flex justify-end'>
           <button

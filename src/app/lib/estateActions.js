@@ -19,10 +19,13 @@ export async function createEstate(prevState, formData) {
   });
 
   const estate = await data.json();
-  if (estate.error) {
-    return { message: estate.error };
+  if (estate?.error === 'Invalid credentials') {
+    redirect('/login');
+  } else if (estate?.error) {
+    return { error: estate?.error };
   }
 
+  revalidatePath(`/dashboard/${user_id}`);
   redirect(`/dashboard/${user_id}`);
 }
 
@@ -71,8 +74,10 @@ export async function updateEstate(prevState, formData) {
   });
 
   const estate = await data.json();
-  if (estate.error) {
-    return { message: estate.error };
+  if (estate?.error === 'Invalid credentials') {
+    redirect('/login');
+  } else if (estate?.error) {
+    return { error: estate.error };
   }
 
   revalidatePath(`/dashboard/${user_id}`);
@@ -83,10 +88,15 @@ export async function deleteEstate(houseId) {
   const token = cookies().get('user_token')?.value;
   const user_id = cookies().get('user_id').value;
 
-  await fetch(`http://localhost:8000/houses/${houseId}`, {
+  const data = await fetch(`http://localhost:8000/houses/${houseId}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
+
+  const estate = await data.json();
+  if (estate?.error === 'Invalid credentials') {
+    redirect('/login');
+  }
 
   revalidatePath(`/dashboard/${user_id}`);
 }

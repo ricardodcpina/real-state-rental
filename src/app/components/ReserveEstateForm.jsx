@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
   const initialState = {
-    message: null,
+    error: null,
   };
 
   const [reserveEstateState, reserveEstateAction] = useFormState(reserveEstate, initialState);
@@ -69,8 +69,8 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
                   Reserve
                 </button>
               </div>
-              {reserveEstateState.message && (
-                <h1 className='text-red-600 mb-3'>{reserveEstateState.message}</h1>
+              {reserveEstateState.error && (
+                <h1 className='text-red-600 mb-3'>{reserveEstateState.error}</h1>
               )}
             </form>
           )

@@ -22,8 +22,10 @@ export async function reserveEstate(prevState, formData) {
   });
 
   const reserve = await data.json();
-  if (reserve.error) {
-    return { message: reserve.error };
+  if (reserve?.error === 'Invalid credentials') {
+    redirect('/login');
+  } else if (reserve?.error) {
+    return { error: reserve.error };
   }
 
   revalidatePath('/');
@@ -41,9 +43,10 @@ export async function cancelReserve(reserve_id) {
 
   const reserve = await data.json();
 
-  if (reserve?.error) {
-    console.log('Could not cancel reserve');
-    return;
+  if (reserve?.error === 'Invalid credentials') {
+    redirect('/login');
+  } else if (reserve?.error) {
+    return { error: reserve.error };
   }
 
   revalidatePath(`/dashboard/${user_id}`);

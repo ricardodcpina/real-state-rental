@@ -13,7 +13,7 @@ export default function LoginForm() {
   }, [router]);
 
   const initialState = {
-    message: null,
+    error: null,
   };
 
   const [hasAccount, setHasAccount] = useState(true);
@@ -60,11 +60,11 @@ export default function LoginForm() {
             />
           </>
         )}
-        {hasAccount && loginState.message && (
-          <h1 className='text-red-600 mb-3'>{loginState.message}</h1>
+        {hasAccount && loginState.error && (
+          <h1 className='text-red-600 mb-3'>{loginState.error}</h1>
         )}
-        {!hasAccount && createUserState.message && (
-          <h1 className='text-red-600 mb-3'>{createUserState.message}</h1>
+        {!hasAccount && createUserState.error && (
+          <h1 className='text-red-600 mb-3'>{createUserState.error}</h1>
         )}
         <div className='flex justify-end'>
           <input

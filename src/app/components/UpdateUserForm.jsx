@@ -8,7 +8,7 @@ export default function UpdateUserForm({ user }) {
   const user_id = user._id;
 
   const initialState = {
-    message: null,
+    error: null,
   };
 
   const initialFormFields = {
@@ -59,8 +59,8 @@ export default function UpdateUserForm({ user }) {
           placeholder='*****'
         />
         <input id='user-id' name='user-id' type='hidden' value={user_id} />
-        {updateUserState.message && (
-          <h1 className='text-red-600 mb-3'>{updateUserState.message}</h1>
+        {updateUserState.error && (
+          <h1 className='text-red-600 mb-3'>{updateUserState.error}</h1>
         )}
 
         <div className='flex justify-between'>
@@ -73,6 +73,7 @@ export default function UpdateUserForm({ user }) {
           <input
             type='reset'
             className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
+            onClick={() => setFormFields({ ...initialFormFields })}
             value='Cancel'
           />
           <input

@@ -43,6 +43,7 @@ export default function UpdateEstateForm({ estate }) {
           name='thumbnail'
           type='file'
           accept='.jpg, .jpeg, .png'
+          value=''
           onChange={(e) =>
             setFormFields({
               ...formFields,

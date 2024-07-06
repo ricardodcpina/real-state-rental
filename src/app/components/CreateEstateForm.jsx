@@ -6,7 +6,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 
 export default function CreateEstateForm({ user_id }) {
-  const initialErrorState = {
+  const initialState = {
     error: null,
   };
 
@@ -18,7 +18,7 @@ export default function CreateEstateForm({ user_id }) {
     available: true,
   };
 
-  const [createEstateState, createEstateAction] = useFormState(createEstate, initialErrorState);
+  const [createEstateState, createEstateAction] = useFormState(createEstate, initialState);
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
@@ -41,6 +41,7 @@ export default function CreateEstateForm({ user_id }) {
           name='thumbnail'
           type='file'
           accept='.jpg, .jpeg, .png'
+          value=''
           onChange={(e) =>
             setFormFields({
               ...formFields,
@@ -100,7 +101,7 @@ export default function CreateEstateForm({ user_id }) {
             No
           </label>
         </div>
-        {createEstateState.error && (
+        {createEstateState?.error && (
           <h1 className='text-red-600 mb-3'>{createEstateState.error}</h1>
         )}
         <div className='flex justify-end'>

@@ -6,6 +6,8 @@ import { revalidatePath } from 'next/cache';
 
 export async function reserveEstate(prevState, formData) {
   const token = cookies().get('user_token')?.value;
+  if (!token) redirect('/login');
+
   const user_id = formData.get('user-id');
   const estate_id = formData.get('estate-id');
 
@@ -22,9 +24,7 @@ export async function reserveEstate(prevState, formData) {
   });
 
   const reserve = await data.json();
-  if (reserve?.error === 'Invalid credentials') {
-    redirect('/login');
-  } else if (reserve?.error) {
+  if (reserve?.error) {
     return { error: reserve.error };
   }
 
@@ -34,6 +34,8 @@ export async function reserveEstate(prevState, formData) {
 
 export async function cancelReserve(reserve_id) {
   const token = cookies().get('user_token')?.value;
+  if (!token) redirect('/login');
+
   const user_id = cookies().get('user_id')?.value;
 
   const data = await fetch(`http://localhost:8000/houses/reserves/${reserve_id}`, {
@@ -42,10 +44,7 @@ export async function cancelReserve(reserve_id) {
   });
 
   const reserve = await data.json();
-
-  if (reserve?.error === 'Invalid credentials') {
-    redirect('/login');
-  } else if (reserve?.error) {
+  if (reserve?.error) {
     return { error: reserve.error };
   }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormState } from 'react-dom';
-import { updateUser, deleteUser } from '../lib/userActions';
+import { updateUser, deleteUser } from '@/app/lib/userActions';
 import { useState } from 'react';
 
 export default function UpdateUserForm({ user }) {

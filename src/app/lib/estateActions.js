@@ -7,6 +7,10 @@ import { revalidatePath } from 'next/cache';
 export async function createEstate(prevState, formData) {
   const token = cookies().get('user_token')?.value;
 
+  if (!token) {
+    redirect('/login');
+  }
+
   const user_id = formData.get('user-id');
 
   const data = await fetch('http://localhost:8000/houses', {
@@ -19,9 +23,8 @@ export async function createEstate(prevState, formData) {
   });
 
   const estate = await data.json();
-  if (estate?.error === 'Invalid credentials') {
-    redirect('/login');
-  } else if (estate?.error) {
+
+  if (estate?.error) {
     return { error: estate?.error };
   }
 
@@ -31,6 +34,8 @@ export async function createEstate(prevState, formData) {
 
 export async function fetchEstate(estate_id) {
   const token = cookies().get('user_token')?.value;
+
+  if (!token) redirect('/login');
 
   const data = await fetch(`http://localhost:8000/houses/${estate_id}`, {
     method: 'GET',
@@ -63,6 +68,9 @@ export async function fetchEstates(
 
 export async function updateEstate(prevState, formData) {
   const token = cookies().get('user_token')?.value;
+
+  if (!token) redirect('/login');
+
   const user_id = formData.get('user-id');
   const estate_id = formData.get('estate-id');
 
@@ -74,9 +82,7 @@ export async function updateEstate(prevState, formData) {
   });
 
   const estate = await data.json();
-  if (estate?.error === 'Invalid credentials') {
-    redirect('/login');
-  } else if (estate?.error) {
+  if (estate?.error) {
     return { error: estate.error };
   }
 
@@ -86,6 +92,8 @@ export async function updateEstate(prevState, formData) {
 
 export async function deleteEstate(houseId) {
   const token = cookies().get('user_token')?.value;
+  if (!token) redirect('/login');
+
   const user_id = cookies().get('user_id').value;
 
   const data = await fetch(`http://localhost:8000/houses/${houseId}`, {
@@ -94,9 +102,6 @@ export async function deleteEstate(houseId) {
   });
 
   const estate = await data.json();
-  if (estate?.error === 'Invalid credentials') {
-    redirect('/login');
-  }
 
   revalidatePath(`/dashboard/${user_id}`);
 }

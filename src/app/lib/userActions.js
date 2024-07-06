@@ -57,6 +57,8 @@ export async function createUser(prevState, formData) {
 export async function fetchUser(user_id) {
   const token = cookies().get('user_token')?.value;
 
+  if (!token) redirect('/login');
+
   const data = await fetch(`http://localhost:8000/users/${user_id}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },
@@ -72,6 +74,8 @@ export async function fetchUser(user_id) {
 
 export async function updateUser(prevState, formData) {
   const token = cookies().get('user_token')?.value;
+
+  if (!token) redirect('/login');
 
   const user_id = formData.get('user-id');
   const username = formData.get('username');
@@ -99,9 +103,7 @@ export async function updateUser(prevState, formData) {
 
   const user = await data.json();
 
-  if (user?.error === 'Invalid credentials') {
-    redirect('/login');
-  } else if (user?.error) {
+  if (user?.error) {
     return { error: user.error };
   }
 
@@ -112,14 +114,15 @@ export async function updateUser(prevState, formData) {
 export async function deleteUser(user_id) {
   const token = cookies().get('user_token')?.value;
 
+  if (!token) redirect('/login');
+
   const data = await fetch(`http://localhost:8000/users/${user_id}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (user?.error === 'Invalid credentials') {
-    redirect('/login');
-  } else if (user?.error) {
+  const user = await data.json();
+  if (user?.error) {
     return { error: user.error };
   }
 

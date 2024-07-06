@@ -20,7 +20,7 @@ export default async function CarouselContainer({ user_id, description, currentP
     reserves = await fetchMyReserves(pageLimit, skipPages);
   }
 
-  const totalPages = Math.ceil(totalEntries / pageLimit);
+  const totalPages = Math.ceil(totalEntries / pageLimit) || 1;
 
   const blankCards =
     (estates?.length > 0 && Array(pageLimit - estates?.length).fill(null)) ||

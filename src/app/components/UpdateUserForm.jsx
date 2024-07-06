@@ -2,6 +2,7 @@
 
 import { useFormState } from 'react-dom';
 import { updateUser, deleteUser } from '../lib/userActions';
+import { useState } from 'react';
 
 export default function UpdateUserForm({ user }) {
   const user_id = user._id;
@@ -10,7 +11,13 @@ export default function UpdateUserForm({ user }) {
     message: null,
   };
 
+  const initialFormFields = {
+    username: user.username,
+    email: user.email,
+  };
+
   const [updateUserState, updateUserAction] = useFormState(updateUser, initialState);
+  const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
     <div className='container my-8 mx-16 w-[400px] p-4 h-1/3 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg font-bold text-slate-950'>
@@ -22,7 +29,8 @@ export default function UpdateUserForm({ user }) {
           name='username'
           type='text'
           className='mb-2 p-1 rounded-md'
-          placeholder={user.username}
+          value={formFields.username}
+          onChange={(e) => setFormFields({ ...formFields, username: e.target.value })}
           required
         />
         <label htmlFor='email'>E-mail</label>
@@ -31,7 +39,7 @@ export default function UpdateUserForm({ user }) {
           name='email'
           type='email'
           className='mb-2 p-1 rounded-md'
-          placeholder={user.email}
+          placeholder={formFields.email}
           disabled
         />
         <label htmlFor='new-password'>New Password</label>
@@ -41,7 +49,6 @@ export default function UpdateUserForm({ user }) {
           type='password'
           className='mb-2 p-1 rounded-md'
           placeholder='*****'
-          required
         />
         <label htmlFor='confirm-password'>Confirm Password</label>
         <input
@@ -50,7 +57,6 @@ export default function UpdateUserForm({ user }) {
           type='password'
           className='mb-4 p-1 rounded-md'
           placeholder='*****'
-          required
         />
         <input id='user-id' name='user-id' type='hidden' value={user_id} />
         {updateUserState.message && (

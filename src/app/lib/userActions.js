@@ -17,7 +17,7 @@ export async function loginUser(prevState, formData) {
 
   const credentials = await data.json();
   if (credentials.error) {
-    return { message: credentials.error };
+    return { error: credentials.error };
   }
 
   const timeLapse = 1000 * 180;
@@ -77,9 +77,14 @@ export async function updateUser(prevState, formData) {
   const username = formData.get('username');
   const newPassword = formData.get('password');
   const confirmNewPassword = formData.get('confirm-password');
+  const body = { username };
 
   if (confirmNewPassword !== newPassword) {
     return { message: 'Password confirmation does not match!' };
+  }
+
+  if (newPassword) {
+    body.password = newPassword;
   }
 
   const data = await fetch(`http://localhost:8000/users/${user_id}`, {
@@ -88,11 +93,8 @@ export async function updateUser(prevState, formData) {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      username,
-      password: newPassword,
-    }),
-    cache: 'no-cache', // or no-store?
+    body: JSON.stringify(body),
+    cache: 'no-cache',
   });
 
   const user = await data.json();

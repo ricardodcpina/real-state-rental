@@ -9,7 +9,11 @@ export default async function Container({ currentPage, maxCost, estateLocation, 
   const estates = await fetchEstates(pageLimit, skipPages, maxCost, estateLocation, estateName);
 
   const allEstates = await fetchEstates(0, 0, maxCost, estateLocation, estateName);
-  const totalPages = Math.ceil(allEstates.length / pageLimit);
+  const totalPages = Math.ceil(allEstates.length / pageLimit) || 1;
+
+  const blankCards =
+    (estates?.length > 0 && Array(pageLimit - estates?.length).fill(null)) ||
+    Array(pageLimit).fill(null);
 
   return (
     <div
@@ -19,7 +23,7 @@ export default async function Container({ currentPage, maxCost, estateLocation, 
       <div className='ml-4 flex justify-start items-center font-bold text-slate-950'>
         <h1 className='text-2xl'>Catalog</h1>
       </div>
-      <div className='grid grid-cols-5 grid-rows-2'>
+      <div className='grid grid-cols-5 grid-rows-2 mb-4'>
         {estates &&
           estates.map((estate) => (
             <HouseCard
@@ -30,6 +34,7 @@ export default async function Container({ currentPage, maxCost, estateLocation, 
               estate_price={estate.price}
             />
           ))}
+        {blankCards.length > 0 && blankCards.map((_, index) => <HouseCard key={index} />)}
       </div>
       <Paginator totalPages={totalPages} />
     </div>

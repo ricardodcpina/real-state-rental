@@ -41,7 +41,6 @@ export default function CreateEstateForm({ user_id }) {
           name='thumbnail'
           type='file'
           accept='.jpg, .jpeg, .png'
-          value=''
           onChange={(e) =>
             setFormFields({
               ...formFields,

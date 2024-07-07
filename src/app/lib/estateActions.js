@@ -35,8 +35,6 @@ export async function createEstate(prevState, formData) {
 export async function fetchEstate(estate_id) {
   const token = cookies().get('user_token')?.value;
 
-  if (!token) redirect('/login');
-
   const data = await fetch(`http://localhost:8000/houses/${estate_id}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },

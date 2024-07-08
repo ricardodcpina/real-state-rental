@@ -18,7 +18,7 @@ export default async function Container({ currentPage, maxCost, estateLocation, 
   return (
     <div
       id='catalog-container'
-      className='w-[70%] ml-16 my-8 px-8 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg'
+      className='w-[90%] ml-16 my-8 px-8 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg'
     >
       <div className='ml-4 flex justify-start items-center font-bold text-slate-950'>
         <h1 className='text-2xl'>Catalog</h1>

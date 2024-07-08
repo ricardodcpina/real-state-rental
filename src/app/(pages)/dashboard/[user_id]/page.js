@@ -14,7 +14,7 @@ export default async function DashboardPage({ params, searchParams }) {
   const currentReservesPage = parseInt(searchParams.reservePage);
 
   return (
-    <div className='flex flex-col w-[80%]'>
+    <div className='flex flex-col w-[80%] py-8 gap-6'>
       <CarouselContainer
         user_id={user_id}
         description='My Estates'

@@ -28,12 +28,12 @@ export default async function CarouselContainer({ user_id, description, currentP
     Array(pageLimit).fill(null);
 
   return (
-    <div className='w-[90%] ml-16 my-8 px-8 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg'>
+    <div className='w-[90%] ml-16 px-8 py-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg'>
       <div className='flex justify-between items-center font-bold text-slate-950'>
         <h1 className='ml-4 text-2xl'>{description}</h1>
         {description === 'My Estates' && (
           <Link href={`/dashboard/${user_id}/new-estate`}>
-            <button className='flex mr-4 pr-2 bg-slate-500 hover:bg-slate-400 rounded-md transition-colors duration-500'>
+            <button className='flex items-center mr-4 pr-2 bg-slate-500 hover:bg-slate-400 rounded-md transition-colors duration-500'>
               <PlusCircleIcon className='h-7 w-7 mr-2 text-yellow-700 bg-black rounded-md border-2 border-gray-700' />
               New Entry
             </button>

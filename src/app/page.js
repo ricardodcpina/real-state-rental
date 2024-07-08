@@ -7,11 +7,13 @@ export default function Page({ searchParams }) {
   const estateName = searchParams.name;
 
   return (
-    <Container
-      currentPage={currentCatalogPage}
-      maxCost={maxCostFilter}
-      estateLocation={estateLocation}
-      estateName={estateName}
-    />
+    <div className='w-[80%]'>
+      <Container
+        currentPage={currentCatalogPage}
+        maxCost={maxCostFilter}
+        estateLocation={estateLocation}
+        estateName={estateName}
+      />
+    </div>
   );
 }

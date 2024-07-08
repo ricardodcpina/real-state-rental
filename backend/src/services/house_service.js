@@ -3,7 +3,7 @@ const path = require('path');
 const { isValidObjectId } = require('mongoose');
 const { validateFields } = require('./user_service');
 
-const { House } = require('../models');
+const { House, Reserve } = require('../models');
 
 const errors = require('../errors');
 
@@ -130,7 +130,10 @@ exports.deleteHouse = async (userId, houseId) => {
   // Deletes image file from public folder
   deletePreviousEstateImage(house.thumbnail);
 
-  // Hard delete house from database
+  // Deletes associated reserves from database
+  await Reserve.deleteOne({ house: houseId });
+
+  // Deletes house from database
   const deleted = await House.deleteOne({ _id: houseId });
 
   return deleted;

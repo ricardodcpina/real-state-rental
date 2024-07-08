@@ -1,63 +1,64 @@
-const mockFind = jest.fn()
-const mockIdValidation = jest.fn()
+const mockFind = jest.fn();
+const mockIdValidation = jest.fn();
+const mockPopulate = jest.fn();
 
-const mockMongoose = { isValidObjectId: mockIdValidation }
+const mockMongoose = { isValidObjectId: mockIdValidation };
 const mockModels = {
-    House: {
-        findOne: mockFind
-    }
-}
+  House: {
+    findOne: mockFind,
+    populate: mockPopulate,
+  },
+};
 
-jest.mock('../../src/models', () => mockModels)
-jest.mock('mongoose', () => mockMongoose)
+jest.mock('../../src/models', () => mockModels);
+jest.mock('mongoose', () => mockMongoose);
 
-const houseService = require('../../src/services/house_service')
+const houseService = require('../../src/services/house_service');
 
-describe("findHouse", () => {
-    describe("when validations are successfull", () => {
-        it("returns the specified house", async () => {
-            const mockHouse = jest.fn()
+describe('findHouse', () => {
+  describe('when validations are successfull', () => {
+    it('returns the specified house', async () => {
+      const mockHouse = jest.fn();
 
-            mockIdValidation.mockReturnValue(true)
-            mockFind.mockResolvedValue(mockHouse)
+      mockIdValidation.mockReturnValue(true);
+      mockFind.mockResolvedValue(mockHouse);
 
-            const house = houseService.findHouse("mock_house_id")
+      const house = houseService.findHouse('mock_house_id');
 
-            await expect(house).resolves.toBe(mockHouse)
-            expect(mockFind).toHaveBeenCalledWith({
-                _id: "mock_house_id"
-            })
-        })
-    })
+      await expect(house).resolves.toBe(mockHouse);
 
-    describe("when the validation fails", () => {
+      expect(mockIdValidation).toHaveBeenCalledWith('mock_house_id');
+      expect(mockFind).toHaveBeenCalledWith({
+        _id: 'mock_house_id',
+      });
+    });
+  });
 
-        describe("when the ID is not a valid ObjectID", () => {
-            it("returns an error", async () => {
-                mockIdValidation.mockReturnValue(false)
+  describe('when the validation fails', () => {
+    describe('when the ID is not a valid ObjectID', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(false);
 
-                const house = houseService.findHouse("4846541") // Invalid ObjectID
+        const house = houseService.findHouse('4846541');
 
-                await expect(house).rejects.toEqual(
-                    { "message": "Invalid ID", "statusCode": 400 })
-            })
-        })
+        await expect(house).rejects.toEqual({ message: 'Invalid ID', statusCode: 400 });
+      });
+    });
 
-        describe("when the given ID does not match any house", () => {
-            it("returns an error", async () => {
+    describe('when the given ID does not match any house', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(true);
+        mockFind.mockResolvedValue(null);
 
-                mockIdValidation.mockReturnValue(true)
-                mockFind.mockResolvedValue(null)
+        const house = houseService.findHouse('64b884dbbfe2d03f39137e24');
 
-                const house = houseService.findHouse("64b884dbbfe2d03f39137e24") // Valid ObjectID
+        await expect(house).rejects.toEqual({ message: 'Invalid ID', statusCode: 400 });
 
-                await expect(house).rejects.toEqual(
-                    { "message": "Invalid ID", "statusCode": 400 })
-
-                expect(mockFind).toHaveBeenCalledWith({
-                    _id: "64b884dbbfe2d03f39137e24"
-                })
-            })
-        })
-    })
-})
+        expect(mockIdValidation).toHaveBeenCalledWith('64b884dbbfe2d03f39137e24');
+        expect(mockFind).toHaveBeenCalledWith({
+          _id: '64b884dbbfe2d03f39137e24',
+        });
+      });
+    });
+  });
+});

@@ -64,7 +64,7 @@ exports.listHouses = async (available, limit, skip, maxCost, estateLocation, est
   return houses;
 };
 
-// MUST BE INCLUDED IN TEST
+// MUST BE INCLUDED IN TESTS
 exports.findHouse = async (houseId) => {
   // Checks Object ID validity
   if (!isValidObjectId(houseId)) throw errors.invalidID;

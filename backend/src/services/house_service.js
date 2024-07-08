@@ -21,11 +21,20 @@ const deletePreviousEstateImage = (estateImage) => {
   });
 };
 
+const validateFile = (file) => {
+  if (!file) {
+    throw errors.fileRequired;
+  }
+};
+
 ////////////////////////  MAIN FUNCTIONS  //////////////////////////////
 
 exports.createHouse = async (userId, filename, description, location, price, available) => {
   // Validate required fields
   validateFields({ description, price, location, available });
+
+  // Validate file input
+  validateFile(filename);
 
   // Save house on database
   const house = await House.create({
@@ -64,7 +73,7 @@ exports.findHouse = async (houseId) => {
   const house = await House.findOne({ _id: houseId });
   if (!house) throw errors.invalidID;
 
-  await House.populate(house, 'reserve')
+  await House.populate(house, 'reserve');
 
   return house;
 };

@@ -9,7 +9,7 @@ const houseService = require('../services/house_service');
 const { authentication } = require('../middlewares');
 
 router.post('/', authentication, upload, async (req, res) => {
-  const { filename } = req.file;
+  const { filename } = req.file || {};
   const { description, location, price, available } = req.body;
   const { userId } = req;
 

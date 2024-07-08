@@ -44,7 +44,8 @@ export default function CreateEstateForm({ user_id }) {
           onChange={(e) =>
             setFormFields({
               ...formFields,
-              image: URL.createObjectURL(e.target.files[0]),
+              image:
+                (e.target.files[0] && URL.createObjectURL(e.target.files[0])) || formFields.image,
             })
           }
           hidden
@@ -57,6 +58,7 @@ export default function CreateEstateForm({ user_id }) {
           type='text'
           value={formFields.description}
           onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
+          required
         />
         <label htmlFor='estate-location'>Location</label>
         <input
@@ -66,6 +68,7 @@ export default function CreateEstateForm({ user_id }) {
           type='text'
           value={formFields.location}
           onChange={(e) => setFormFields({ ...formFields, location: e.target.value })}
+          required
         />
         <label htmlFor='price'>Price (USD)</label>
         <input
@@ -75,6 +78,7 @@ export default function CreateEstateForm({ user_id }) {
           type='number'
           value={formFields.price}
           onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
+          required
         />
         <input id='user-id' name='user-id' type='hidden' value={user_id} />
         <div>
@@ -86,6 +90,7 @@ export default function CreateEstateForm({ user_id }) {
               type='radio'
               value='true'
               className='mt-4 mr-1'
+              defaultChecked
             />
             Yes
           </label>

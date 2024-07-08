@@ -59,7 +59,9 @@ export default function UpdateEstateForm({ estate }) {
           id='estate-name'
           name='description'
           type='text'
+          maxLength='12'
           value={formFields.description}
+          required
           onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
         />
 
@@ -70,6 +72,7 @@ export default function UpdateEstateForm({ estate }) {
           name='location'
           type='text'
           value={formFields.location}
+          required
           onChange={(e) => setFormFields({ ...formFields, location: e.target.value })}
         />
 
@@ -80,6 +83,7 @@ export default function UpdateEstateForm({ estate }) {
           name='price'
           type='number'
           value={formFields.price}
+          required
           onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
         />
 

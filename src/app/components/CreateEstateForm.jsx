@@ -56,6 +56,7 @@ export default function CreateEstateForm({ user_id }) {
           id='estate-name'
           name='description'
           type='text'
+          maxLength='12'
           value={formFields.description}
           onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
           required

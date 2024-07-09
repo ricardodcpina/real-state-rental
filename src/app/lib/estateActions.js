@@ -4,6 +4,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
+const baseURL = 'http://localhost:8000/houses';
+
 export async function createEstate(prevState, formData) {
   const token = cookies().get('user_token')?.value;
 
@@ -13,7 +15,7 @@ export async function createEstate(prevState, formData) {
 
   const user_id = formData.get('user-id');
 
-  const data = await fetch('http://localhost:8000/houses', {
+  const data = await fetch(`${baseURL}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -35,7 +37,7 @@ export async function createEstate(prevState, formData) {
 export async function fetchEstate(estate_id) {
   const token = cookies().get('user_token')?.value;
 
-  const data = await fetch(`http://localhost:8000/houses/${estate_id}`, {
+  const data = await fetch(`${baseURL}/${estate_id}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -51,16 +53,21 @@ export async function fetchEstates(
   estateLocation = '',
   estateName = ''
 ) {
-  const data = await fetch(
-    `http://localhost:8000/houses?available=true&limit=${limit}&skip=${skip}&maxCost=${maxCost}&estateLocation=${estateLocation}&estateName=${estateName}`,
-    {
-      method: 'GET',
-    }
-  );
+  let estates = [];
+  const paginationQueryParams = `available=true&limit=${limit}&skip=${skip}`;
+  const filterQueryParams = `maxCost=${maxCost}&estateLocation=${estateLocation}&estateName=${estateName}`;
 
-  const estates = await data.json();
-  if (estates.error) {
-    return null;
+  try {
+    const data = await fetch(`${baseURL}?${paginationQueryParams}&${filterQueryParams}`, {
+      method: 'GET',
+    });
+
+    estates = await data.json();
+    if (estates.error) {
+      return null;
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 
   revalidatePath(`/`);
@@ -76,7 +83,7 @@ export async function updateEstate(prevState, formData) {
   const user_id = formData.get('user-id');
   const estate_id = formData.get('estate-id');
 
-  const data = await fetch(`http://localhost:8000/houses/${estate_id}`, {
+  const data = await fetch(`${baseURL}/${estate_id}`, {
     method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
@@ -98,7 +105,7 @@ export async function deleteEstate(houseId) {
 
   const user_id = cookies().get('user_id').value;
 
-  const data = await fetch(`http://localhost:8000/houses/${houseId}`, {
+  const data = await fetch(`${baseURL}/${houseId}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });

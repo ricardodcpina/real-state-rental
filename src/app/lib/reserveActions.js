@@ -39,7 +39,7 @@ export async function reserveEstate(prevState, formData) {
   redirect(`/dashboard/${user_id}`);
 }
 
-export async function cancelReserve(prevState, reserve_id) {
+export async function cancelReserve(reserve_id, prevState) {
   const token = cookies().get('user_token')?.value;
   const user_id = cookies().get('user_id')?.value;
 

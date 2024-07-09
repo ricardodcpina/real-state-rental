@@ -1,9 +1,9 @@
 'use client';
 
+import Image from 'next/image';
+import { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { createEstate } from '@/app/lib/estateActions';
-import { useState } from 'react';
-import Image from 'next/image';
 
 export default function CreateEstateForm({ user_id }) {
   const initialState = {
@@ -18,7 +18,9 @@ export default function CreateEstateForm({ user_id }) {
     available: true,
   };
 
-  const [createEstateState, createEstateAction] = useFormState(createEstate, initialState);
+  const createStateWithId = createEstate.bind(null, user_id);
+
+  const [createEstateState, createEstateAction] = useFormState(createStateWithId, initialState);
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
@@ -81,7 +83,7 @@ export default function CreateEstateForm({ user_id }) {
           onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
           required
         />
-        <input id='user-id' name='user-id' type='hidden' value={user_id} />
+        {/* <input id='user-id' name='user-id' type='hidden' value={user_id} /> */}
         <div>
           <h1>Estate available for rental?</h1>
           <label htmlFor='estate-available'>

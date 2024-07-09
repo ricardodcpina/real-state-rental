@@ -9,7 +9,7 @@ export default async function EstatePage({ params }) {
   const loggedUserId = cookies().get('user_id')?.value;
   const estate = await fetchEstate(estate_id);
 
-  if (estate.error === 'Invalid ID') {
+  if (estate?.error) {
     notFound();
   }
 

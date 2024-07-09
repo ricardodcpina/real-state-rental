@@ -6,28 +6,27 @@ import { revalidatePath } from 'next/cache';
 
 const baseURL = 'http://localhost:8000/houses';
 
-export async function createEstate(prevState, formData) {
+export async function createEstate(user_id, prevState, formData) {
   const token = cookies().get('user_token')?.value;
 
-  if (!token) {
-    redirect('/login');
-  }
+  if (!token) redirect('/login');
 
-  const user_id = formData.get('user-id');
+  try {
+    const data = await fetch(`${baseURL}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+      cache: 'no-cache',
+    });
 
-  const data = await fetch(`${baseURL}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-    cache: 'no-cache',
-  });
-
-  const estate = await data.json();
-
-  if (estate?.error) {
-    return { error: estate?.error };
+    const estate = await data.json();
+    if (estate?.error) {
+      return { error: estate.error };
+    }
+  } catch (error) {
+    console.log('Could not create estate');
   }
 
   revalidatePath(`/dashboard/${user_id}`);
@@ -35,14 +34,23 @@ export async function createEstate(prevState, formData) {
 }
 
 export async function fetchEstate(estate_id) {
+  let estate = null;
   const token = cookies().get('user_token')?.value;
 
-  const data = await fetch(`${baseURL}/${estate_id}`, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    const data = await fetch(`${baseURL}/${estate_id}`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  const estate = await data.json();
+    estate = await data.json();
+    if (estate?.error) {
+      return { error: estate.error };
+    }
+  } catch (error) {
+    console.log('Could not fetch estate');
+  }
+
   return estate;
 }
 
@@ -63,11 +71,11 @@ export async function fetchEstates(
     });
 
     estates = await data.json();
-    if (estates.error) {
+    if (estates?.error) {
       return null;
     }
   } catch (err) {
-    console.log(err.message);
+    console.log('Could not fetch estates');
   }
 
   revalidatePath(`/`);

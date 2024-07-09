@@ -8,7 +8,7 @@ export default async function ReservePage({ params }) {
   const loggedUserId = cookies().get('user_id')?.value;
   const estate = await fetchEstate(estate_id);
 
-  if (estate?.reserve?._id !== reserve_id) {
+  if (estate?.reserve?._id !== reserve_id || estate?.reserve?.user !== loggedUserId) {
     notFound();
   }
 

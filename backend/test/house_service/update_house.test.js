@@ -1,109 +1,122 @@
-const mockFind = jest.fn()
-const mockFindAndUpdate = jest.fn()
-const mockIdValidation = jest.fn()
+const mockFind = jest.fn();
+const mockFindAndUpdate = jest.fn();
+const mockIdValidation = jest.fn();
+const mockUnlink = jest.fn();
 
+const mockFileSystem = { unlink: mockUnlink };
 const mockModels = {
-    House: {
-        findByIdAndUpdate: mockFindAndUpdate,
-        findOne: mockFind
-    }
-}
+  House: {
+    findByIdAndUpdate: mockFindAndUpdate,
+    findOne: mockFind,
+  },
+};
 
-const mockMongoose = { isValidObjectId: mockIdValidation }
+const mockMongoose = { isValidObjectId: mockIdValidation };
 
-jest.mock('../../src/models', () => mockModels)
-jest.mock('mongoose', () => mockMongoose)
+jest.mock('mongoose', () => mockMongoose);
+jest.mock('fs', () => mockFileSystem);
+jest.mock('bcrypt', () => jest.fn());
 
+jest.mock('../../src/models', () => mockModels);
 
-const houseService = require('../../src/services/house_service')
+const houseService = require('../../src/services/house_service');
 
 describe('updateHouse', () => {
-    describe('when the validation is successfull', () => {
-        it('returns the updated house', async () => {
-            const mockUpdated = jest.fn()
-            const mockHouse = { user: 'userId' }
+  describe('when the validation is successfull', () => {
+    it('returns the updated house with provided new image file', async () => {
+      const mockUpdated = jest.fn();
+      const mockHouse = { user: 'userId', thumbnail: 'mockThumbnail' };
 
-            mockIdValidation.mockReturnValue(true)
-            mockFind.mockResolvedValue(mockHouse)
-            mockFindAndUpdate.mockResolvedValue(mockUpdated)
+      mockIdValidation.mockReturnValue(true);
+      mockFind.mockResolvedValue(mockHouse);
+      mockFindAndUpdate.mockResolvedValue(mockUpdated);
 
-            const house = houseService.updateHouse('userId',
-                '64d6df45781a1517d42d5071', { price: 500 }, 'filename.png')
+      const house = houseService.updateHouse(
+        'userId',
+        '64d6df45781a1517d42d5071',
+        { price: 500 },
+        'filename.png'
+      );
 
-            await expect(house).resolves.toBe(mockUpdated)
+      await expect(house).resolves.toBe(mockUpdated);
 
-            expect(mockFind).toHaveBeenCalledWith(
-                { _id: '64d6df45781a1517d42d5071' }
-            )
+      expect(mockIdValidation).toHaveBeenCalledWith('64d6df45781a1517d42d5071');
+      expect(mockFind).toHaveBeenCalledWith({ _id: '64d6df45781a1517d42d5071' });
+      expect(mockFindAndUpdate).toHaveBeenCalledWith(
+        { _id: '64d6df45781a1517d42d5071' },
+        { thumbnail: 'filename.png', price: 500 },
+        { new: true }
+      );
+    });
 
-            expect(mockFindAndUpdate).toHaveBeenCalledWith(
-                { _id: '64d6df45781a1517d42d5071' },
-                { thumbnail: 'filename.png', price: 500 }, { new: true }
-            )
-        })
-    })
+    it('returns the updated house with last image file', async () => {
+      const mockUpdated = jest.fn();
+      const mockHouse = { user: 'userId', thumbnail: 'lastThumbnail' };
 
-    describe('when the validation fails', () => {
-        describe('when the ID is not a valid ObjectID', () => {
-            it("returns an error", async () => {
+      mockIdValidation.mockReturnValue(true);
+      mockFind.mockResolvedValue(mockHouse);
+      mockFindAndUpdate.mockResolvedValue(mockUpdated);
 
-                mockIdValidation.mockReturnValue(false)
+      const house = houseService.updateHouse('userId', '64d6df45781a1517d42d5071', { price: 500 });
 
-                const house = houseService.updateHouse('userId',
-                    '646415', {})
+      await expect(house).resolves.toBe(mockUpdated);
 
-                await expect(house).rejects.toEqual(
-                    { "message": "Invalid ID", "statusCode": 400 })
+      expect(mockIdValidation).toHaveBeenCalledWith('64d6df45781a1517d42d5071');
+      expect(mockFind).toHaveBeenCalledWith({ _id: '64d6df45781a1517d42d5071' });
+      expect(mockFindAndUpdate).toHaveBeenCalledWith(
+        { _id: '64d6df45781a1517d42d5071' },
+        { thumbnail: 'lastThumbnail', price: 500 },
+        { new: true }
+      );
+    });
+  });
 
-                expect(mockIdValidation).toHaveBeenCalledWith('646415')
-            })
-        })
+  describe('when the validation fails', () => {
+    describe('when the ID is not a valid ObjectID', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(false);
 
-        describe('when the given ID does not match any house', () => {
-            it("returns an error", async () => {
+        const house = houseService.updateHouse('userId', '646415', {});
 
-                mockFind.mockResolvedValue(null)
-                mockIdValidation.mockReturnValue(true)
+        await expect(house).rejects.toEqual({ message: 'Invalid ID', statusCode: 400 });
 
-                const house = houseService.updateHouse('userId',
-                    '64d6df45781a1517d42d5071', {})
+        expect(mockIdValidation).toHaveBeenCalledWith('646415');
+      });
+    });
 
-                await expect(house).rejects.toEqual(
-                    { "message": "Invalid ID", "statusCode": 400 })
+    describe('when the given ID does not match any house', () => {
+      it('returns an error', async () => {
+        mockFind.mockResolvedValue(null);
+        mockIdValidation.mockReturnValue(true);
 
-                expect(mockFind).toHaveBeenCalledWith(
-                    { _id: '64d6df45781a1517d42d5071' }
-                )
-            })
-        })
+        const house = houseService.updateHouse('userId', '64d6df45781a1517d42d5071', {});
 
-        describe('when the user tries to change the houses "user" field', () => {
-            it('returns an error', async () => {
+        await expect(house).rejects.toEqual({ message: 'Invalid ID', statusCode: 400 });
 
-                mockIdValidation.mockReturnValue(true)
-                mockFind.mockResolvedValue({ user: 'userId' })
+        expect(mockFind).toHaveBeenCalledWith({ _id: '64d6df45781a1517d42d5071' });
+      });
+    });
 
-                const house = houseService.updateHouse('userId',
-                    'houseId', { user: 'anotherId' })
+    describe('when the user tries to change the houses "user" field', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(true);
+        mockFind.mockResolvedValue({ user: 'userId' });
 
-                await expect(house).rejects.toEqual(
-                    { "message": 'Forbidden request', "statusCode": 403 })
-            })
-        })
+        const house = houseService.updateHouse('userId', 'houseId', { user: 'anotherId' });
 
-        describe('when the user is not the houses owner', () => {
-            it('returns an error', async () => {
+        await expect(house).rejects.toEqual({ message: 'Forbidden request', statusCode: 403 });
+      });
+    });
 
-                mockIdValidation.mockReturnValue(true)
-                mockFind.mockResolvedValue({ user: 'anotherId' })
+    describe('when the user is not the houses owner', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(true);
+        mockFind.mockResolvedValue({ user: 'anotherId' });
 
-                const house = houseService.updateHouse('userId',
-                    'houseId', {})
+        const house = houseService.updateHouse('userId', 'houseId', {});
 
-                await expect(house).rejects.toEqual(
-                    { "message": 'Forbidden request', "statusCode": 403 }
-                )
-            })
-        })
-    })
-})
+        await expect(house).rejects.toEqual({ message: 'Forbidden request', statusCode: 403 });
+      });
+    });
+  });
+});

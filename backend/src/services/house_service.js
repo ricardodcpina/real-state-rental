@@ -129,7 +129,7 @@ exports.deleteHouse = async (userId, houseId) => {
   // Deletes image file from public folder
   deletePreviousEstateImage(house.thumbnail);
 
-  // Deletes associated reserves from database
+  // Deletes associated reserve from database if any
   await Reserve.deleteOne({ house: houseId });
 
   // Deletes house from database

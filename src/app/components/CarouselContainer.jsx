@@ -13,10 +13,10 @@ export default async function CarouselContainer({ user_id, description, currentP
   const skipPages = (currentPage - 1) * pageLimit || 0;
 
   if (description === 'My Estates') {
-    totalEntries = (await fetchMyEstates()).length;
+    totalEntries = (await fetchMyEstates())?.length;
     estates = await fetchMyEstates(pageLimit, skipPages);
   } else {
-    totalEntries = (await fetchMyReserves()).length;
+    totalEntries = (await fetchMyReserves())?.length;
     reserves = await fetchMyReserves(pageLimit, skipPages);
   }
 

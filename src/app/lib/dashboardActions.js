@@ -15,7 +15,11 @@ export async function fetchMyEstates(limit = 0, skip = 0) {
     method: 'GET',
     headers: { Authorization: `Bearer ${token}` },
   });
+
   const myEstates = await data.json();
+  if (myEstates.error) {
+    return null;
+  }
 
   revalidatePath(`/dashboard/${user_id}`);
 
@@ -34,6 +38,9 @@ export async function fetchMyReserves(limit = 0, skip = 0) {
   });
 
   const myReserves = await data.json();
+  if (myReserves.error) {
+    return null;
+  }
 
   revalidatePath(`/dashboard/${user_id}`);
 

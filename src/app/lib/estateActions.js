@@ -59,6 +59,10 @@ export async function fetchEstates(
   );
 
   const estates = await data.json();
+  if (estates.error) {
+    return null;
+  }
+
   revalidatePath(`/`);
 
   return estates;

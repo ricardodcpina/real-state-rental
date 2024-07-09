@@ -9,7 +9,7 @@ export default async function Container({ currentPage, maxCost, estateLocation, 
   const estates = await fetchEstates(pageLimit, skipPages, maxCost, estateLocation, estateName);
 
   const allEstates = await fetchEstates(0, 0, maxCost, estateLocation, estateName);
-  const totalPages = Math.ceil(allEstates.length / pageLimit) || 1;
+  const totalPages = Math.ceil(allEstates?.length / pageLimit) || 1;
 
   const blankCards =
     (estates?.length > 0 && Array(pageLimit - estates?.length).fill(null)) ||

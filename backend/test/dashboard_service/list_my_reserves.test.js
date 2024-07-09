@@ -1,24 +1,29 @@
-const mockFind = jest.fn()
-const mockPopulate = jest.fn()
+const mockFind = jest.fn();
+const mockPopulate = jest.fn();
 
 const mockModels = {
-    Reserve: {
-        find: mockFind,
-        populate: mockPopulate
-    }
-}
+  Reserve: {
+    find: mockFind,
+    populate: mockPopulate,
+  },
+};
 
-jest.mock('../../src/models', () => mockModels)
+jest.mock('../../src/models', () => mockModels);
 
-const dashboardService = require('../../src/services/dashboard_service')
+const dashboardService = require('../../src/services/dashboard_service');
 
 describe('listMyReserves', () => {
-    it('returns a list of users active house reserves', async () => {
-        const mockList = jest.fn()
-        mockFind.mockResolvedValue(mockList)
+  it('returns a list of users active house reserves', async () => {
+    const mockList = jest.fn();
+    mockFind.mockResolvedValue(mockList);
 
-        const list = dashboardService.listMyReserves('userId')
+    const list = dashboardService.listMyReserves('userId', 'limit', 'skip');
 
-        await expect(list).resolves.toBe(mockList)
-    })
-})
+    await expect(list).resolves.toBe(mockList);
+
+    expect(mockFind).toHaveBeenCalledWith({ user: 'userId' }, null, {
+        limit: 'limit',
+        skip: 'skip',
+      });
+  });
+});

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useActionState } from 'react';
+import { useFormState } from 'react-dom';
 import { cancelReserve, reserveEstate } from '@/app/lib/reserveActions';
 
 export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
@@ -9,13 +9,10 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
     error: null,
   };
 
-  const cancelReserveWithId = cancelReserve.bind(null, initialState, reserve_id);
+  const cancelReserveWithId = cancelReserve.bind(null, reserve_id);
 
-  const [reserveEstateState, reserveEstateAction] = useActionState(reserveEstate, initialState);
-  const [cancelReserveState, cancelReserveAction] = useActionState(
-    cancelReserveWithId,
-    initialState
-  );
+  const [reserveEstateState, reserveEstateAction] = useFormState(reserveEstate, initialState);
+  const [cancelReserveState, cancelReserveAction] = useFormState(cancelReserveWithId, initialState);
 
   return (
     <div className='w-2/6 h-2/3 container m-16 p-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg text-slate-950 font-bold'>

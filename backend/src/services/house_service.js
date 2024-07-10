@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { isValidObjectId } = require('mongoose');
-const { validateFields } = require('./user_service');
+const { validateFields } = require('../utils/utils');
 
 const { House, Reserve } = require('../models');
 

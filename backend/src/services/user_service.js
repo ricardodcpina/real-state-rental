@@ -1,57 +1,11 @@
-require('dotenv').config();
-
 const { isValidObjectId } = require('mongoose');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const { validateFields, hashPassword, verifyEmail, generateToken } = require('../utils/utils');
 
 const { User } = require('../models');
+
+const { listMyReserves } = require('./dashboard_service');
+// const { cancelReserve } = require('./reserve_service');
 const errors = require('../errors');
-
-////////////////////////  AUXILIARY FUNCTIONS  /////////////////////////
-
-const validateFields = (input) => {
-  // Check for undefined and blank fields
-  for (let field in input) {
-    let fieldValue = String(input[field]);
-    if (!fieldValue || fieldValue.trim() === '') {
-      let formattedField = field.replace(field[0], field[0].toUpperCase());
-      throw {
-        message: `${formattedField} is required`,
-        statusCode: 400,
-      };
-    }
-  }
-  return true;
-};
-
-const verifyEmail = async (email) => {
-  // Check email is unique
-  const user = await User.findOne({
-    email,
-    deletedAt: { $exists: false },
-  });
-
-  if (user) throw errors.emailNotUnique;
-
-  // Check email for correct formatting
-  let regex = RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
-
-  if (!regex.test(email)) throw errors.emailnotFormatted;
-
-  return true;
-};
-
-const hashPassword = (password) => {
-  return bcrypt.hash(password, process.env.SALT);
-};
-
-const generateToken = (userId) => {
-  return jwt.sign({ sub: userId }, process.env.HASH_SECRET, {
-    expiresIn: '180s',
-  });
-};
-
-////////////////////////  MAIN FUNCTIONS  //////////////////////////////
 
 exports.createUser = async (username, email, password) => {
   // Validate required fields
@@ -65,6 +19,7 @@ exports.createUser = async (username, email, password) => {
 
   // Save user on database
   const input = { username, email, password: cryptedPassword };
+
   const user = await User.create(input);
 
   return user;
@@ -145,34 +100,37 @@ exports.listUsers = async () => {
   return await User.find({ deletedAt: null });
 };
 
-exports.softDeleteUser = async (id) => {
+exports.softDeleteUser = async (userId) => {
   // Check ID validity
-  if (!isValidObjectId(id)) throw errors.invalidID;
+  if (!isValidObjectId(userId)) throw errors.invalidID;
 
   // Checks for user ID
   const user = await User.findOne({
-    _id: id,
+    _id: userId,
     deletedAt: { $exists: false },
   });
 
   if (!user) throw errors.invalidID;
 
+  // Get and delete associated reserves
+  // const reserves = await listMyReserves(userId);
+
+  // reserves.forEach(async (reserve) => {
+  //   const deletedReserve = await cancelReserve(userId, reserve._id);
+  //   console.log(deletedReserve);
+  // });
+  // const deletedReserves = await Reserve.cancelReserve(userId);
+
+  // const deletedEstates = await House.deleteMany({ user: userId });
+  // console.log(deletedEstates);
+
   // Add deletedAt field to user
   const updatedUser = await User.findByIdAndUpdate(
-    { _id: id },
+    { _id: userId },
     { deletedAt: Date.now() },
+
     { new: true }
   );
 
   return updatedUser;
 };
-
-exports.generateSALT = async () => {
-  const SALT = await bcrypt.genSalt();
-
-  return SALT;
-};
-
-exports.validateFields = validateFields;
-
-exports.verifyEmail = verifyEmail;

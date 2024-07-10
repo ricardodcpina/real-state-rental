@@ -4,26 +4,37 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
-export async function loginUser(prevState, formData) {
-  const data = await fetch('http://localhost:8000/users/auth', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username: formData.get('username'),
-      password: formData.get('password'),
-    }),
-    cache: 'no-store',
-  });
+const baseURL = `http://localhost:8000/users`;
 
-  const credentials = await data.json();
-  if (credentials.error) {
-    return { error: credentials.error };
+export async function loginUser(prevState, formData) {
+  let credentials = null;
+
+  try {
+    const data = await fetch(`${baseURL}/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: formData.get('username'),
+        password: formData.get('password'),
+      }),
+      cache: 'no-store',
+    });
+
+    credentials = await data.json();
+    if (credentials?.error) {
+      return { error: credentials.error };
+    }
+
+    const timeLapse = 1000 * 30;
+    const expirationConfig = { expires: Date.now() + timeLapse, path: '/' };
+
+    cookies().set('user_token', credentials.token, expirationConfig);
+    cookies().set('user_id', credentials.userId, expirationConfig);
+  } catch (error) {
+    console.log('Could not login');
   }
 
-  const timeLapse = 1000 * 30;
-  cookies().set('user_token', credentials.token, { expires: Date.now() + timeLapse, path: '/' });
-  cookies().set('user_id', credentials.userId, { expires: Date.now() + timeLapse, path: '/' });
-  redirect(`/dashboard/${credentials.userId}`);
+  redirect(`/dashboard/${credentials?.userId}`);
 }
 
 export async function createUser(prevState, formData) {
@@ -36,37 +47,46 @@ export async function createUser(prevState, formData) {
     return { error: 'Password confirmation does not match!' };
   }
 
-  const data = await fetch('http://localhost:8000/users', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username,
-      email,
-      password,
-    }),
-  });
+  try {
+    const data = await fetch(`${baseURL}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+      }),
+    });
 
-  const user = await data.json();
-  if (user.error) {
-    return { error: user.error };
+    const user = await data.json();
+    if (user?.error) {
+      return { error: user.error };
+    }
+
+    await loginUser(null, formData);
+  } catch (error) {
+    console.log('Could not create user');
   }
-
-  await loginUser(null, formData);
 }
 
 export async function fetchUser(user_id) {
+  let user = null;
   const token = cookies().get('user_token')?.value;
 
   if (!token) redirect('/login');
 
-  const data = await fetch(`http://localhost:8000/users/${user_id}`, {
-    method: 'GET',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    const data = await fetch(`${baseURL}/${user_id}`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  const user = await data.json();
-  if (user?.error) {
-    return { error: user.error };
+    user = await data.json();
+    if (user?.error) {
+      return { error: user.error };
+    }
+  } catch (error) {
+    console.log('Could not fetch user');
   }
 
   return user;
@@ -74,10 +94,10 @@ export async function fetchUser(user_id) {
 
 export async function updateUser(prevState, formData) {
   const token = cookies().get('user_token')?.value;
+  const user_id = cookies().get('user_id')?.value;
 
   if (!token) redirect('/login');
 
-  const user_id = formData.get('user-id');
   const username = formData.get('username');
   const newPassword = formData.get('password');
   const confirmNewPassword = formData.get('confirm-password');
@@ -91,39 +111,47 @@ export async function updateUser(prevState, formData) {
     body.password = newPassword;
   }
 
-  const data = await fetch(`http://localhost:8000/users/${user_id}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-    cache: 'no-cache',
-  });
+  try {
+    const data = await fetch(`${baseURL}/${user_id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      cache: 'no-cache',
+    });
 
-  const user = await data.json();
-
-  if (user?.error) {
-    return { error: user.error };
+    const user = await data.json();
+    if (user?.error) {
+      return { error: user.error };
+    }
+  } catch (error) {
+    console.log('Could not update user');
   }
 
   revalidatePath(`/dashboard/${user_id}/settings`);
   redirect(`/dashboard/${user_id}`);
 }
 
-export async function deleteUser(user_id) {
+export async function deleteUser(prevState) {
   const token = cookies().get('user_token')?.value;
+  const user_id = cookies().get('user_id')?.value;
 
   if (!token) redirect('/login');
 
-  const data = await fetch(`http://localhost:8000/users/${user_id}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    const data = await fetch(`${baseURL}/${user_id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-  const user = await data.json();
-  if (user?.error) {
-    return { error: user.error };
+    const user = await data.json();
+    if (user?.error) {
+      return { error: user.error };
+    }
+  } catch (error) {
+    console.log('Could not delete user');
   }
 
   await logoutUser();

@@ -88,7 +88,6 @@ export default function UpdateEstateForm({ estate }) {
         />
 
         <input id='estate-id' name='estate-id' type='hidden' value={estate._id} />
-        <input id='user-id' name='user-id' type='hidden' value={estate.user} />
 
         <div className='mb-2'>
           <h1>Estate available for rental?</h1>
@@ -115,7 +114,7 @@ export default function UpdateEstateForm({ estate }) {
             No
           </label>
         </div>
-        {updateEstateState.error && (
+        {updateEstateState?.error && (
           <h1 className='text-red-600 mb-3'>{updateEstateState.error}</h1>
         )}
         <div className='flex justify-end'>

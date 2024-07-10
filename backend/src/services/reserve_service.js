@@ -1,12 +1,17 @@
 const { isValidObjectId } = require('mongoose');
 
 const { House, Reserve } = require('../models');
+const { validateFields } = require('./user_service');
 const errors = require('../errors');
 
 exports.createReserve = async (userId, houseId, date) => {
   // Check Object ID validity
   if (!isValidObjectId(houseId)) throw errors.invalidID;
 
+  // Validate date field
+  validateFields({ date });
+
+  // Checks for associated estate ID
   const house = await House.findOne({ _id: houseId });
   if (!house) throw errors.notFound;
 

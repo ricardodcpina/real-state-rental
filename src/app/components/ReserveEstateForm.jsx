@@ -69,14 +69,14 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
 
                 <input id='estate-id' name='estate-id' type='hidden' value={estate._id} />
               </div>
+              {reserveEstateState?.error && (
+                <h1 className='text-red-600 mt-3'>{reserveEstateState.error}</h1>
+              )}
               <div className='flex flex-col'>
                 <button className='mt-3 mb-2 p-3 bg-slate-500 hover:bg-green-800 cursor-pointer rounded-md transition-colors duration-500'>
                   Reserve
                 </button>
               </div>
-              {reserveEstateState?.error && (
-                <h1 className='text-red-600 mb-3'>{reserveEstateState.error}</h1>
-              )}
             </form>
           )
         )}

@@ -3,8 +3,10 @@ const { validateFields, hashPassword, verifyEmail, generateToken } = require('..
 
 const { User } = require('../models');
 
-const { listMyReserves } = require('./dashboard_service');
-// const { cancelReserve } = require('./reserve_service');
+const { listMyReserves, listMyHouses } = require('./dashboard_service');
+const { cancelReserve } = require('./reserve_service');
+const { deleteHouse } = require('./house_service');
+
 const errors = require('../errors');
 
 exports.createUser = async (username, email, password) => {
@@ -113,16 +115,16 @@ exports.softDeleteUser = async (userId) => {
   if (!user) throw errors.invalidID;
 
   // Get and delete associated reserves
-  // const reserves = await listMyReserves(userId);
+  const reserves = await listMyReserves(userId);
+  reserves.forEach(async (reserve) => {
+    await cancelReserve(userId, reserve._id);
+  });
 
-  // reserves.forEach(async (reserve) => {
-  //   const deletedReserve = await cancelReserve(userId, reserve._id);
-  //   console.log(deletedReserve);
-  // });
-  // const deletedReserves = await Reserve.cancelReserve(userId);
-
-  // const deletedEstates = await House.deleteMany({ user: userId });
-  // console.log(deletedEstates);
+  // Get and delete associated estates
+  const estates = await listMyHouses(userId);
+  estates.forEach(async (estate) => {
+    await deleteHouse(userId, estate._id);
+  });
 
   // Add deletedAt field to user
   const updatedUser = await User.findByIdAndUpdate(

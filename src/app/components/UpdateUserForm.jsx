@@ -1,12 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { updateUser, deleteUser } from '@/app/lib/userActions';
-import { useState } from 'react';
 
 export default function UpdateUserForm({ user }) {
-  const user_id = user._id;
-
   const initialState = {
     error: null,
   };
@@ -17,6 +15,7 @@ export default function UpdateUserForm({ user }) {
   };
 
   const [updateUserState, updateUserAction] = useFormState(updateUser, initialState);
+  const [deleteUserState, deleteUserAction] = useFormState(deleteUser, initialState);
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
@@ -58,29 +57,32 @@ export default function UpdateUserForm({ user }) {
           className='mb-4 p-1 rounded-md'
           placeholder='*****'
         />
-        <input id='user-id' name='user-id' type='hidden' value={user_id} />
-        {updateUserState.error && (
-          <h1 className='text-red-600 mb-3'>{updateUserState.error}</h1>
-        )}
+        {updateUserState.error && <h1 className='text-red-600 mb-3'>{updateUserState.error}</h1>}
+        {deleteUserState.error && <h1 className='text-red-600 mb-3'>{deleteUserState.error}</h1>}
 
         <div className='flex justify-between'>
-          <input
+          <button
             type='button'
-            onClick={() => deleteUser(user_id)}
+            onClick={() => deleteUserAction()}
             className='p-2 mr-2 bg-slate-500 hover:bg-red-800 transition-colors duration-500 cursor-pointer rounded'
-            value='Delete account'
-          />
-          <input
+          >
+            Delete account
+          </button>
+          <button
             type='reset'
             className='p-2 mr-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
             onClick={() => setFormFields({ ...initialFormFields })}
             value='Cancel'
-          />
-          <input
+          >
+            Cancel
+          </button>
+          <button
             type='submit'
             className='p-2 bg-slate-500 hover:bg-slate-400 transition-colors duration-500 cursor-pointer rounded'
             value='Save settings'
-          />
+          >
+            Save settings
+          </button>
         </div>
       </form>
     </div>

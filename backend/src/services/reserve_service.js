@@ -11,7 +11,6 @@ exports.createReserve = async (userId, houseId, date) => {
 
   // Validate date field
   validateFields({ date });
-  console.log('passed validate');
 
   // Checks for associated estate ID
   const house = await House.findOne({ _id: houseId });

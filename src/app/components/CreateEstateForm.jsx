@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { createEstate } from '@/app/lib/estateActions';
 
-export default function CreateEstateForm({ user_id }) {
+export default function CreateEstateForm() {
   const initialState = {
     error: null,
   };
@@ -18,9 +18,7 @@ export default function CreateEstateForm({ user_id }) {
     available: true,
   };
 
-  const createStateWithId = createEstate.bind(null, user_id);
-
-  const [createEstateState, createEstateAction] = useFormState(createStateWithId, initialState);
+  const [createEstateState, createEstateAction] = useFormState(createEstate, initialState);
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (

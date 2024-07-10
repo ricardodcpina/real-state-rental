@@ -21,6 +21,7 @@ const deletePreviousEstateImage = (estateImage) => {
   });
 };
 
+// NEEDS TO BE INCLUDED IN TESTS!
 const validateFile = (file) => {
   if (!file) {
     throw errors.fileRequired;
@@ -49,7 +50,14 @@ exports.createHouse = async (userId, filename, description, location, price, ava
   return house;
 };
 
-exports.listHouses = async (available, limit, skip, maxCost, estateLocation, estateName) => {
+exports.listHouses = async (
+  available,
+  limit = 0,
+  skip = 0,
+  maxCost = Infinity,
+  estateLocation = '',
+  estateName = ''
+) => {
   // List houses using designated filters
   const houses = await House.find(
     {

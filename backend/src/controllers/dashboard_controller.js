@@ -32,4 +32,16 @@ router.get('/reserves', authentication, async (req, res) => {
   }
 });
 
+router.delete('/houses', authentication, async (req, res) => {
+  const { userId } = req;
+
+  try {
+    const houses = await dashboardService.deleteMyHouses(userId);
+    res.status(200).json(houses);
+  } catch (error) {
+    if (!err.statusCode) err.statusCode = 500;
+    res.status(err.statusCode).json({ error: err.message });
+  }
+});
+
 module.exports = router;

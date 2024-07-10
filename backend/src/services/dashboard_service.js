@@ -13,3 +13,9 @@ exports.listMyReserves = async (userId, limit = 0, skip = 0) => {
 
   return reserves;
 };
+
+exports.deleteMyHouses = async (userId) => {
+  const deletedHouses = await House.deleteMany({ user: userId });
+
+  return deletedHouses;
+};

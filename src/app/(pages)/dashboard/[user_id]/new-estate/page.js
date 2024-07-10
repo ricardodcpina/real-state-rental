@@ -10,5 +10,5 @@ export default async function NewEstatePage({ params }) {
     notFound();
   }
 
-  return <CreateEstateForm user_id={user_id} />;
+  return <CreateEstateForm />;
 }

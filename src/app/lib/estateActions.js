@@ -114,7 +114,7 @@ export async function updateEstate(prevState, formData) {
 
 export async function deleteEstate(estate_id) {
   const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id').value;
+  const user_id = cookies().get('user_id')?.value;
 
   if (!token) redirect('/login');
 

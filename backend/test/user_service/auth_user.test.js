@@ -1,76 +1,83 @@
-const mockFind = jest.fn()
+const mockFind = jest.fn();
+const mockGenerateToken = jest.fn();
+const mockValidateFields = jest.fn();
+const mockHashPassword = jest.fn();
 
 const mockModels = {
-    User: {
-        findOne: mockFind
-    }
-}
+  User: {
+    findOne: mockFind,
+  },
+};
 
-const mockSign = jest.fn()
+const mockUtils = {
+  validateFields: mockValidateFields,
+  generateToken: mockGenerateToken,
+  hashPassword: mockHashPassword,
+};
 
-const mockJWT = {
-    sign: mockSign
-}
+jest.mock('../../src/models', () => mockModels);
+jest.mock('../../src/utils/utils', () => mockUtils);
 
-jest.mock('../../src/models', () => mockModels)
-jest.mock('jsonwebtoken', () => mockJWT)
+const userService = require('../../src/services/user_service');
 
-const userService = require('../../src/services/user_service')
+describe('when the validation is successfull', () => {
+  it('returns token for authorized user', async () => {
+    const mockUser = {
+      _id: 'userId',
+      password: '$2b$10$4K8VYfIHxZEatcUCWaklJORNamNV16GgE6wYLa9EjWonGwRPiExa.',
+    };
+    const mockToken = 'eyJhbGciOiJIUzI1NrWCJD1wXyG-e_wfLmo-5oxfJGOU';
+    const mockPassword = mockUser.password;
 
-describe("when the validation is successfull", () => {
-    it("returns token and userId for authorized user", async () => {
-        const mockUser = jest.fn()
-        const mockToken = jest.fn()
-        mockUser.password = "$2b$10$4K8VYfIHxZEatcUCWaklJORNamNV16GgE6wYLa9EjWonGwRPiExa."
-        mockUser._id = 'userId'
+    mockFind.mockResolvedValue(mockUser);
+    mockHashPassword.mockResolvedValue(mockPassword);
+    mockGenerateToken.mockResolvedValue(mockToken);
 
-        mockFind.mockResolvedValue(mockUser)
-        mockSign.mockReturnValue(mockToken)
+    const user = userService.authUser('testuser', 'testpass');
 
-        const user = userService.authUser("testuser", "testpass")
+    await expect(user).resolves.toEqual({
+      authenticated: true,
+      token: mockToken,
+      userId: mockUser._id,
+    });
 
-        await expect(user).resolves.toEqual({ authenticated: true, token: mockToken, userId: mockUser._id})
+    expect(mockFind).toHaveBeenCalledWith({
+      username: 'testuser',
+      deletedAt: { $exists: false },
+    });
+  });
+});
 
-        expect(mockFind).toHaveBeenCalledWith({
-            username: 'testuser',
-            deletedAt: { $exists: false }
-        })
-    })
-})
+describe('when the validation fails', () => {
+  describe('when the given username does not match any user or softdeleted', () => {
+    it('returns an error', async () => {
+      mockFind.mockResolvedValue(null);
 
-describe("when the validation fails", () => {
-    describe("when the given username does not match any user or softdeleted", () => {
-        it("returns an error", async () => {
+      const user = userService.authUser('testuser', 'testpass');
 
-            mockFind.mockResolvedValue(null)
+      await expect(user).rejects.toEqual({ message: 'Invalid credentials', statusCode: 401 });
 
-            const user = userService.authUser("testuser", "testpass")
+      expect(mockFind).toHaveBeenCalledWith({
+        username: 'testuser',
+        deletedAt: { $exists: false },
+      });
+    });
+  });
 
-            await expect(user).rejects.toEqual(
-                { "message": "Invalid credentials", "statusCode": 401 })
+  describe('when the input password does not match the user password', () => {
+    it('returns an error', async () => {
+      mockFind.mockResolvedValue({
+        password: '$2b$10$4K8VYfIHxZEatcUCWaklJORNamNV16GgE6wYLa9EjWonGwRPiExa.',
+      });
 
-            expect(mockFind).toHaveBeenCalledWith({
-                username: 'testuser',
-                deletedAt: { $exists: false }
-            })
-        })
-    })
+      const user = userService.authUser('testuser', 'wrongpass');
 
-    describe("when the input password does not match the user password", () => {
-        it("returns an error", async () => {
-            mockFind.mockResolvedValue({
-                password: "$2b$10$4K8VYfIHxZEatcUCWaklJORNamNV16GgE6wYLa9EjWonGwRPiExa."
-            })
+      await expect(user).rejects.toEqual({ message: 'Invalid credentials', statusCode: 401 });
 
-            const user = userService.authUser("testuser", "wrongpass")
-
-            await expect(user).rejects.toEqual(
-                { "message": "Invalid credentials", "statusCode": 401 })
-
-            expect(mockFind).toHaveBeenCalledWith({
-                username: 'testuser',
-                deletedAt: { $exists: false }
-            })
-        })
-    })
-})
+      expect(mockFind).toHaveBeenCalledWith({
+        username: 'testuser',
+        deletedAt: { $exists: false },
+      });
+    });
+  });
+});

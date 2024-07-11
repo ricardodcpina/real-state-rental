@@ -1,11 +1,13 @@
 require('dotenv').config();
 
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const { SignJWT, jwtVerify } = require('jose');
 
 const { User } = require('../models');
 
 const errors = require('../errors');
+
+const key = new TextEncoder().encode(process.env.HASH_SECRET);
 
 exports.validateFields = (input) => {
   // Check for undefined and blank fields
@@ -43,8 +45,18 @@ exports.hashPassword = (password) => {
   return bcrypt.hash(password, process.env.SALT);
 };
 
-exports.generateToken = (userId) => {
-  return jwt.sign({ sub: userId }, process.env.HASH_SECRET, {
-    expiresIn: '180s',
-  });
+exports.generateToken = async (userId) => {
+  const token = await new SignJWT({ sub: userId })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('60s')
+    .sign(key);
+
+  return token;
+};
+
+exports.verifyToken = async (token) => {
+  const { payload } = await jwtVerify(token, key, { algorithms: ['HS256'] });
+
+  return payload;
 };

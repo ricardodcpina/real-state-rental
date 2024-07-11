@@ -31,20 +31,18 @@ exports.authUser = async (username, password) => {
   // Validate input fields
   validateFields({ username, password });
 
-  // Checks username existence
-
+  // Checks if username already exists
   const user = await User.findOne({
     username,
     deletedAt: { $exists: false },
   });
-
   if (!user) throw errors.notAuthenticated;
 
   // Apply encryption and check authenticity
   if ((await hashPassword(password)) !== user.password) throw errors.notAuthenticated;
 
   // Authenticate
-  const token = generateToken(user._id);
+  const token = await generateToken(user._id);
 
   return { authenticated: true, token, userId: user._id };
 };

@@ -109,7 +109,6 @@ exports.softDeleteUser = async (userId) => {
     _id: userId,
     deletedAt: { $exists: false },
   });
-
   if (!user) throw errors.invalidID;
 
   // Get and delete associated reserves

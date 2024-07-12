@@ -1,85 +1,103 @@
-const mockFind = jest.fn()
-const mockSoftDelete = jest.fn()
-const mockIdValidation = jest.fn()
-const RealDate = Date.now
+const mockFind = jest.fn();
+const mockSoftDelete = jest.fn();
+const mockIdValidation = jest.fn();
+const mockListMyReserves = jest.fn();
+const mockListMyHouses = jest.fn();
+const mockCancelReserve = jest.fn();
+const mockDeleteHouse = jest.fn();
+const RealDate = Date.now;
 
-const mockMongoose = { isValidObjectId: mockIdValidation }
+const mockMongoose = { isValidObjectId: mockIdValidation };
 const mockModels = {
-    User: {
-        findOne: mockFind,
-        findByIdAndUpdate: mockSoftDelete
-    }
-}
+  User: {
+    findOne: mockFind,
+    findByIdAndUpdate: mockSoftDelete,
+  },
+};
+const mockDashboardServices = {
+  listMyReserves: mockListMyReserves,
+  listMyHouses: mockListMyHouses,
+};
+const mockReserveServices = {
+  cancelReserve: mockCancelReserve,
+};
+const mockHouseServices = {
+  deleteHouse: mockDeleteHouse,
+};
 
-jest.mock('../../src/models', () => mockModels)
-jest.mock('mongoose', () => mockMongoose)
+jest.mock('mongoose', () => mockMongoose);
+jest.mock('../../src/models', () => mockModels);
+jest.mock('../../src/services/dashboard_service', () => mockDashboardServices);
+jest.mock('../../src/services/reserve_service', () => mockReserveServices);
+jest.mock('../../src/services/house_service.js', () => mockHouseServices);
 
-const userService = require('../../src/services/user_service')
+const userService = require('../../src/services/user_service');
 
-describe("softDeleteUser", () => {
-    describe("when the validation is successfull", () => {
+describe('softDeleteUser', () => {
+  describe('when the validation is successfull', () => {
+    beforeEach(() => (global.Date.now = jest.fn()));
 
-        beforeEach(() =>
-            global.Date.now = jest.fn()
-        )
+    it('adds deletedAt field to user', async () => {
+      const mockUser = jest.fn();
 
-        it("adds deletedAt field to user", async () => {
+      mockIdValidation.mockReturnValue(true);
+      mockFind.mockResolvedValue(mockUser);
+      mockListMyReserves.mockResolvedValue([{ _id: 'reserve_1' }, { _id: 'reserve_2' }]);
+      mockListMyHouses.mockResolvedValue([{ _id: 'estate_1' }, { _id: 'estate_2' }]);
+      mockSoftDelete.mockResolvedValue(mockUser);
 
-            const mockUser = jest.fn()
+      const user = userService.softDeleteUser('64b884dbbfe2d03f39137e24');
 
-            mockIdValidation.mockReturnValue(true)
-            mockFind.mockResolvedValue(mockUser)
-            mockSoftDelete.mockResolvedValue(mockUser)
+      await expect(user).resolves.toBe(mockUser);
 
-            const user = userService.softDeleteUser("64b884dbbfe2d03f39137e24")
+      expect(mockFind).toHaveBeenCalledWith({
+        _id: '64b884dbbfe2d03f39137e24',
+        deletedAt: { $exists: false },
+      });
 
-            await expect(user).resolves.toBe(mockUser)
+      expect(mockSoftDelete).toHaveBeenCalledWith(
+        { _id: '64b884dbbfe2d03f39137e24' },
+        { deletedAt: Date.now() },
+        { new: true }
+      );
+    });
 
-            expect(mockFind).toHaveBeenCalledWith({
-                _id: "64b884dbbfe2d03f39137e24",
-                deletedAt: { $exists: false }
-            })
+    afterEach(() => {
+      global.Date.now = RealDate;
+    });
+  });
 
-            expect(mockSoftDelete).toHaveBeenCalledWith(
-                { _id: "64b884dbbfe2d03f39137e24" }, { deletedAt: Date.now() }, { new: true }
-            )
-        })
+  describe('when the validation fails', () => {
+    describe('when the ID is not a valid ObjectID', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(false);
 
-        afterEach(() => {
-            global.Date.now = RealDate
-        })
-    })
+        const user = userService.softDeleteUser('846351');
 
-    describe("when the validation fails", () => {
-        describe("when the ID is not a valid ObjectID", () => {
-            it("returns an error", async () => {
-                mockIdValidation.mockReturnValue(false)
+        await expect(user).rejects.toEqual({
+          message: 'Invalid ID',
+          statusCode: 400,
+        });
+      });
+    });
 
-                const user = userService.softDeleteUser("846351")
+    describe('when the given ID does not match any user or is deleted', () => {
+      it('returns an error', async () => {
+        mockIdValidation.mockReturnValue(true);
+        mockFind.mockResolvedValue(null);
 
-                await expect(user).rejects.toEqual({
-                    "message": "Invalid ID", "statusCode": 400
-                })
-            })
-        })
+        const user = userService.softDeleteUser('64b884dbbfe2d03f39137e24');
 
-        describe("when the given ID does not match any user or is deleted", () => {
-            it("returns an error", async () => {
+        await expect(user).rejects.toEqual({
+          message: 'Invalid ID',
+          statusCode: 400,
+        });
 
-                mockIdValidation.mockReturnValue(true)
-                mockFind.mockResolvedValue(null)
-
-                const user = userService.findUser("64b884dbbfe2d03f39137e24")
-
-                await expect(user).rejects.toEqual({
-                    "message": "Invalid ID", "statusCode": 400
-                })
-
-                expect(mockFind).toHaveBeenCalledWith({
-                    _id: "64b884dbbfe2d03f39137e24",
-                    deletedAt: { $exists: false }
-                })
-            })
-        })
-    })
-})
+        expect(mockFind).toHaveBeenCalledWith({
+          _id: '64b884dbbfe2d03f39137e24',
+          deletedAt: { $exists: false },
+        });
+      });
+    });
+  });
+});

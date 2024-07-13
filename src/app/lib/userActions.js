@@ -3,12 +3,11 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { getSession } from './sessionActions';
 
 const baseURL = `http://localhost:8000/users`;
 
-export async function loginUser(prevState, formData) {
-  let credentials = null;
-
+export async function loginUser(callbackURL, prevState, formData) {
   try {
     const data = await fetch(`${baseURL}/auth`, {
       method: 'POST',
@@ -20,21 +19,24 @@ export async function loginUser(prevState, formData) {
       cache: 'no-store',
     });
 
-    credentials = await data.json();
+    const credentials = await data.json();
     if (credentials?.error) {
       return { error: credentials.error };
     }
 
-    const timeLapse = 1000 * 30;
-    const expirationConfig = { expires: Date.now() + timeLapse, path: '/' };
+    const timeLapse = 1000 * 60;
+    const cookieConfig = { expires: Date.now() + timeLapse, path: '/', httpOnly: true };
 
-    cookies().set('user_token', credentials.token, expirationConfig);
-    cookies().set('user_id', credentials.userId, expirationConfig);
+    cookies().set('session', credentials?.token, cookieConfig);
   } catch (error) {
     console.log('Could not login');
   }
 
-  redirect(`/dashboard/${credentials?.userId}`);
+  const session = await getSession();
+
+  if (callbackURL) redirect(callbackURL)
+
+  redirect(`/dashboard/${session?.sub}`);
 }
 
 export async function createUser(prevState, formData) {
@@ -62,16 +64,16 @@ export async function createUser(prevState, formData) {
     if (user?.error) {
       return { error: user.error };
     }
-
-    await loginUser(null, formData);
   } catch (error) {
     console.log('Could not create user');
   }
+
+  await loginUser(null, formData);
 }
 
 export async function fetchUser(user_id) {
   let user = null;
-  const token = cookies().get('user_token')?.value;
+  const token = cookies().get('session')?.value;
 
   if (!token) redirect('/login');
 
@@ -93,10 +95,10 @@ export async function fetchUser(user_id) {
 }
 
 export async function updateUser(prevState, formData) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   const username = formData.get('username');
   const newPassword = formData.get('password');
@@ -112,7 +114,7 @@ export async function updateUser(prevState, formData) {
   }
 
   try {
-    const data = await fetch(`${baseURL}/${user_id}`, {
+    const data = await fetch(`${baseURL}/${session?.sub}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -130,18 +132,18 @@ export async function updateUser(prevState, formData) {
     console.log('Could not update user');
   }
 
-  revalidatePath(`/dashboard/${user_id}/settings`);
-  redirect(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}/settings`);
+  redirect(`/dashboard/${session?.sub}`);
 }
 
 export async function deleteUser(prevState) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   try {
-    const data = await fetch(`${baseURL}/${user_id}`, {
+    const data = await fetch(`${baseURL}/${session?.sub}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -158,7 +160,6 @@ export async function deleteUser(prevState) {
 }
 
 export async function logoutUser() {
-  cookies().delete('user_id');
-  cookies().delete('user_token');
+  cookies().delete('session');
   redirect('/');
 }

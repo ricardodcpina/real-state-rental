@@ -34,7 +34,7 @@ export async function loginUser(callbackURL, prevState, formData) {
 
   const session = await getSession();
 
-  if (callbackURL) redirect(callbackURL)
+  if (callbackURL) redirect(callbackURL);
 
   redirect(`/dashboard/${session?.sub}`);
 }
@@ -68,7 +68,7 @@ export async function createUser(prevState, formData) {
     console.log('Could not create user');
   }
 
-  await loginUser(null, formData);
+  await loginUser(null, null, formData);
 }
 
 export async function fetchUser(user_id) {

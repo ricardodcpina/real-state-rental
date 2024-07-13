@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { logoutUser } from '../lib/userActions';
-import { cookies } from 'next/headers';
+import { getSession } from '../lib/sessionActions';
 
-export default function NavBar() {
-  const user_id = cookies().get('user_id')?.value;
+export default async function NavBar() {
+  const session = await getSession();
 
   return (
     <nav id='nav-bar' className='flex grow justify-between items-center'>
@@ -13,26 +13,33 @@ export default function NavBar() {
         </Link>
         <Link
           className='py-6 px-10 hover:bg-zinc-900 transition-colors duration-500'
-          href={`/dashboard/${user_id}`}
+          href={session ? `/dashboard/${session?.sub}` : `/login`}
         >
           DASHBOARD
         </Link>
         <Link
           className='py-6 px-10 hover:bg-zinc-900 transition-colors duration-500'
-          href={`/dashboard/${user_id}/settings`}
+          href={session ? `/dashboard/${session?.sub}/settings` : `/login`}
         >
           SETTINGS
         </Link>
       </div>
       <div>
-        {user_id ? (
+        {session?.sub ? (
           <form action={logoutUser}>
-            <button type='submit' className='py-6 px-10 hover:bg-zinc-900 transition-colors duration-500' href='/login'>
+            <button
+              type='submit'
+              className='py-6 px-10 hover:bg-zinc-900 transition-colors duration-500'
+              href='/login'
+            >
               LOGOUT
             </button>
           </form>
         ) : (
-          <Link className='py-6 px-10 hover:bg-zinc-900 transition-colors duration-500' href='/login'>
+          <Link
+            className='py-6 px-10 hover:bg-zinc-900 transition-colors duration-500'
+            href='/login'
+          >
             LOGIN
           </Link>
         )}

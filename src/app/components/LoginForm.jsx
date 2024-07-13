@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import { loginUser, createUser } from '../lib/userActions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackURL = searchParams?.get('callbackUrl');
 
   useEffect(() => {
     router.refresh();
@@ -16,8 +18,10 @@ export default function LoginForm() {
     error: null,
   };
 
+  const loginUserWithCallbackURL = loginUser.bind(null, callbackURL);
+
   const [hasAccount, setHasAccount] = useState(true);
-  const [loginState, loginUserAction] = useFormState(loginUser, initialState);
+  const [loginState, loginUserAction] = useFormState(loginUserWithCallbackURL, initialState);
   const [createUserState, createUserAction] = useFormState(createUser, initialState);
 
   return (

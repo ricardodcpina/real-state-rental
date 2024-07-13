@@ -3,14 +3,15 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { getSession } from './sessionActions';
 
 const baseURL = 'http://localhost:8000/houses';
 
 export async function reserveEstate(prevState, formData) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   const estate_id = formData.get('estate-id');
 
@@ -36,14 +37,14 @@ export async function reserveEstate(prevState, formData) {
   }
 
   revalidatePath('/');
-  redirect(`/dashboard/${user_id}`);
+  redirect(`/dashboard/${session?.sub}`);
 }
 
 export async function cancelReserve(reserve_id, prevState) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   try {
     const data = await fetch(`${baseURL}/reserves/${reserve_id}`, {
@@ -59,6 +60,6 @@ export async function cancelReserve(reserve_id, prevState) {
     console.log('Could not cancel reserve');
   }
 
-  revalidatePath(`/dashboard/${user_id}`);
-  redirect(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}`);
+  redirect(`/dashboard/${session?.sub}`);
 }

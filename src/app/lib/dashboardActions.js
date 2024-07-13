@@ -3,16 +3,17 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { getSession } from './sessionActions';
 
 const baseURL = `http://localhost:8000/dashboard`;
 
 export async function fetchMyEstates(limit = 0, skip = 0) {
   let myEstates = [];
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
 
-  if (!token) redirect('/login');
+  const session = await getSession();
+  if (!session) redirect('/login');
 
+  const token = cookies().get('session')?.value;
   const paginationQueryParams = `limit=${limit}&skip=${skip}`;
 
   try {
@@ -30,18 +31,18 @@ export async function fetchMyEstates(limit = 0, skip = 0) {
     console.log('Could not fetch owned estates');
   }
 
-  revalidatePath(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}`);
 
   return myEstates;
 }
 
 export async function fetchMyReserves(limit = 0, skip = 0) {
   let myReserves = [];
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
 
-  if (!token) redirect('/login');
+  const session = await getSession();
+  if (!session) redirect('/login');
 
+  const token = cookies().get('session')?.value;
   const paginationQueryParams = `limit=${limit}&skip=${skip}`;
 
   try {
@@ -58,7 +59,7 @@ export async function fetchMyReserves(limit = 0, skip = 0) {
     console.log('Could not fetch own reserves');
   }
 
-  revalidatePath(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}`);
 
   return myReserves;
 }

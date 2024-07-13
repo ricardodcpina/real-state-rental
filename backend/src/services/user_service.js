@@ -44,7 +44,7 @@ exports.authUser = async (username, password) => {
   // Authenticate
   const token = await generateToken(user._id);
 
-  return { authenticated: true, token, userId: user._id };
+  return { authenticated: true, token };
 };
 
 exports.updateUser = async (id, input) => {

@@ -3,14 +3,15 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { getSession } from './sessionActions';
 
 const baseURL = `http://localhost:8000/houses`;
 
 export async function createEstate(prevState, formData) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   try {
     const data = await fetch(`${baseURL}`, {
@@ -30,18 +31,16 @@ export async function createEstate(prevState, formData) {
     console.log('Could not create estate');
   }
 
-  revalidatePath(`/dashboard/${user_id}`);
-  redirect(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}`);
+  redirect(`/dashboard/${session?.sub}`);
 }
 
 export async function fetchEstate(estate_id) {
   let estate = null;
-  const token = cookies().get('user_token')?.value;
 
   try {
     const data = await fetch(`${baseURL}/${estate_id}`, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${token}` },
     });
 
     estate = await data.json();
@@ -85,10 +84,10 @@ export async function fetchEstates(
 }
 
 export async function updateEstate(prevState, formData) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   const estate_id = formData.get('estate-id');
 
@@ -108,15 +107,15 @@ export async function updateEstate(prevState, formData) {
     console.log('Could not update estate');
   }
 
-  revalidatePath(`/dashboard/${user_id}`);
-  redirect(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}`);
+  redirect(`/dashboard/${session?.sub}`);
 }
 
 export async function deleteEstate(estate_id) {
-  const token = cookies().get('user_token')?.value;
-  const user_id = cookies().get('user_id')?.value;
+  const session = await getSession();
+  if (!session) redirect('/login');
 
-  if (!token) redirect('/login');
+  const token = cookies().get('session')?.value;
 
   try {
     const data = await fetch(`${baseURL}/${estate_id}`, {
@@ -132,5 +131,5 @@ export async function deleteEstate(estate_id) {
     console.log('Could not delete estate');
   }
 
-  revalidatePath(`/dashboard/${user_id}`);
+  revalidatePath(`/dashboard/${session?.sub}`);
 }

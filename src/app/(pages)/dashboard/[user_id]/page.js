@@ -1,12 +1,13 @@
 import CarouselContainer from '@/app/components/CarouselContainer';
-import { cookies } from 'next/headers';
+import { getSession } from '@/app/lib/sessionActions';
 import { notFound } from 'next/navigation';
 
 export default async function DashboardPage({ params, searchParams }) {
   const user_id = params.user_id;
-  const loggedUserId = cookies().get('user_id')?.value;
 
-  if (user_id !== loggedUserId) {
+  const session = await getSession();
+
+  if (user_id !== session?.sub) {
     notFound();
   }
 

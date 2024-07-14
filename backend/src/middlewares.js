@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { notAuthenticated, tokenExpired } = require('./errors');
+const { notAuthenticated, serverError } = require('./errors');
 const { verifyToken } = require('./utils/utils');
 
 exports.authentication = async (req, res, next) => {
@@ -25,4 +25,11 @@ exports.authentication = async (req, res, next) => {
   } catch (error) {
     return res.status(statusCode).json({ error: message });
   }
+};
+
+exports.errorHandler = async (err, req, res, next) => {
+  if (!err.statusCode) {
+    return res.status(serverError.statusCode).json({ error: serverError.message });
+  }
+  return res.status(err.statusCode).json({ error: err.message });
 };

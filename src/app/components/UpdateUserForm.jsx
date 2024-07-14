@@ -2,20 +2,26 @@
 
 import { useState } from 'react';
 import { useFormState } from 'react-dom';
+import { usePathname } from 'next/navigation';
 import { updateUser, deleteUser } from '@/app/lib/userActions';
 
 export default function UpdateUserForm({ user }) {
+  const pathname = usePathname();
+
   const initialState = {
     error: null,
   };
 
   const initialFormFields = {
-    username: user.username,
-    email: user.email,
+    username: user?.username,
+    email: user?.email,
   };
 
-  const [updateUserState, updateUserAction] = useFormState(updateUser, initialState);
-  const [deleteUserState, deleteUserAction] = useFormState(deleteUser, initialState);
+  const updateUserWithPathnme = updateUser.bind(null, pathname);
+  const deleteUserWithPathnme = deleteUser.bind(null, pathname);
+
+  const [updateUserState, updateUserAction] = useFormState(updateUserWithPathnme, initialState);
+  const [deleteUserState, deleteUserAction] = useFormState(deleteUserWithPathnme, initialState);
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (

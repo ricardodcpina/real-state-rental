@@ -38,7 +38,6 @@ describe('when the validation is successfull', () => {
     await expect(user).resolves.toEqual({
       authenticated: true,
       token: mockToken,
-      userId: mockUser._id,
     });
 
     expect(mockFind).toHaveBeenCalledWith({

@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getSession } from './sessionActions';
+import { serverError } from '../../../backend/src/errors';
 
 const baseURL = `http://localhost:8000/users`;
 
@@ -30,6 +31,7 @@ export async function loginUser(callbackURL, prevState, formData) {
     cookies().set('session', credentials?.token, cookieConfig);
   } catch (error) {
     console.log('Could not login');
+    return { error: serverError.message };
   }
 
   const session = await getSession();
@@ -66,6 +68,7 @@ export async function createUser(prevState, formData) {
     }
   } catch (error) {
     console.log('Could not create user');
+    return { error: serverError.message };
   }
 
   await loginUser(null, null, formData);
@@ -75,8 +78,6 @@ export async function fetchUser(user_id) {
   let user = null;
   const token = cookies().get('session')?.value;
 
-  if (!token) redirect('/login');
-
   try {
     const data = await fetch(`${baseURL}/${user_id}`, {
       method: 'GET',
@@ -85,18 +86,21 @@ export async function fetchUser(user_id) {
 
     user = await data.json();
     if (user?.error) {
-      return { error: user.error };
+      return null;
     }
   } catch (error) {
     console.log('Could not fetch user');
+    return null;
   }
 
   return user;
 }
 
-export async function updateUser(prevState, formData) {
+export async function updateUser(pathname, prevState, formData) {
+  const callbackUrl = `callbackUrl=${pathname}`;
+
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(`/login/?${callbackUrl}`);
 
   const token = cookies().get('session')?.value;
 
@@ -130,15 +134,18 @@ export async function updateUser(prevState, formData) {
     }
   } catch (error) {
     console.log('Could not update user');
+    return { error: serverError.message };
   }
 
   revalidatePath(`/dashboard/${session?.sub}/settings`);
   redirect(`/dashboard/${session?.sub}`);
 }
 
-export async function deleteUser(prevState) {
+export async function deleteUser(pathname, prevState) {
+  const callbackUrl = `callbackUrl=${pathname}`;
+
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(`/login/?${callbackUrl}`);
 
   const token = cookies().get('session')?.value;
 
@@ -154,6 +161,7 @@ export async function deleteUser(prevState) {
     }
   } catch (error) {
     console.log('Could not delete user');
+    return { error: serverError.message };
   }
 
   await logoutUser();

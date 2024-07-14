@@ -81,7 +81,7 @@ export default function CreateEstateForm() {
           onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
           required
         />
-        {/* <input id='user-id' name='user-id' type='hidden' value={user_id} /> */}
+  
         <div>
           <h1>Estate available for rental?</h1>
           <label htmlFor='estate-available'>

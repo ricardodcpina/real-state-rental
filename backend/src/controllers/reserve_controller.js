@@ -4,7 +4,7 @@ const router = express.Router();
 const reserveService = require('../services/reserve_service');
 const { authentication } = require('../middlewares');
 
-router.post('/:id/reserves', authentication, async (req, res) => {
+router.post('/:id/reserves', authentication, async (req, res, next) => {
   const { userId } = req;
   const { date } = req.body;
   const houseId = req.params.id;
@@ -14,12 +14,11 @@ router.post('/:id/reserves', authentication, async (req, res) => {
 
     res.status(201).json(reserve);
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).json({ error: err.message });
+    next(err)
   }
 });
 
-router.delete('/reserves/:id', authentication, async (req, res) => {
+router.delete('/reserves/:id', authentication, async (req, res, next) => {
   const { userId } = req;
   const reserveId = req.params.id;
 
@@ -28,8 +27,7 @@ router.delete('/reserves/:id', authentication, async (req, res) => {
 
     res.status(200).json(reserve);
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).json({ error: err.message });
+    next(err)
   }
 });
 

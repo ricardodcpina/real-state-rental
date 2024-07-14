@@ -4,7 +4,7 @@ const router = express.Router();
 const dashboardService = require('../services/dashboard_service');
 const { authentication } = require('../middlewares');
 
-router.get('/houses', authentication, async (req, res) => {
+router.get('/houses', authentication, async (req, res, next) => {
   const { limit, skip } = req.query;
   const { userId } = req;
 
@@ -13,12 +13,11 @@ router.get('/houses', authentication, async (req, res) => {
 
     res.status(200).json(houses);
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).json({ error: err.message });
+    next(err);
   }
 });
 
-router.get('/reserves', authentication, async (req, res) => {
+router.get('/reserves', authentication, async (req, res, next) => {
   const { limit, skip } = req.query;
   const { userId } = req;
 
@@ -27,32 +26,29 @@ router.get('/reserves', authentication, async (req, res) => {
 
     res.status(200).json(reserves);
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).json({ error: err.message });
+    next(err);
   }
 });
 
-router.delete('/houses', authentication, async (req, res) => {
+router.delete('/houses', authentication, async (req, res, next) => {
   const { userId } = req;
 
   try {
     const houses = await dashboardService.deleteMyHouses(userId);
     res.status(200).json(houses);
   } catch (error) {
-    if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).json({ error: err.message });
+    next(err);
   }
 });
 
-router.delete('/reserves', authentication, async (req, res) => {
+router.delete('/reserves', authentication, async (req, res, next) => {
   const { userId } = req;
 
   try {
     const reserves = await dashboardService.deleteMyReserves(userId);
     res.status(200).json(reserves);
   } catch (error) {
-    if (!err.statusCode) err.statusCode = 500;
-    res.status(err.statusCode).json({ error: err.message });
+    next(err);
   }
 });
 

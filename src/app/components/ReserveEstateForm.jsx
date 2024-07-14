@@ -3,16 +3,26 @@
 import Image from 'next/image';
 import { useFormState } from 'react-dom';
 import { cancelReserve, reserveEstate } from '@/app/lib/reserveActions';
+import { usePathname } from 'next/navigation';
 
 export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
+  const pathname = usePathname();
+
   const initialState = {
     error: null,
   };
 
-  const cancelReserveWithId = cancelReserve.bind(null, reserve_id);
+  const cancelReserveWithIdAndPathname = cancelReserve.bind(null, pathname, reserve_id);
+  const reserveEstateWithPathname = reserveEstate.bind(null, pathname);
 
-  const [reserveEstateState, reserveEstateAction] = useFormState(reserveEstate, initialState);
-  const [cancelReserveState, cancelReserveAction] = useFormState(cancelReserveWithId, initialState);
+  const [reserveEstateState, reserveEstateAction] = useFormState(
+    reserveEstateWithPathname,
+    initialState
+  );
+  const [cancelReserveState, cancelReserveAction] = useFormState(
+    cancelReserveWithIdAndPathname,
+    initialState
+  );
 
   return (
     <div className='w-2/6 h-2/3 container m-16 p-4 bg-gradient-to-r from-zinc-300 to-zinc-200 rounded-lg text-slate-950 font-bold'>

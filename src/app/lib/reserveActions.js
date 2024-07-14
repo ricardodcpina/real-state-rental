@@ -4,12 +4,15 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getSession } from './sessionActions';
+import { serverError } from '../../../backend/src/errors';
 
 const baseURL = 'http://localhost:8000/houses';
 
-export async function reserveEstate(prevState, formData) {
+export async function reserveEstate(pathname, prevState, formData) {
+  const callbackUrl = `callbackUrl=${pathname}`;
+
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(`/login/?${callbackUrl}`);
 
   const token = cookies().get('session')?.value;
 
@@ -34,15 +37,18 @@ export async function reserveEstate(prevState, formData) {
     }
   } catch (error) {
     console.log('Could not create reserve');
+    return { error: serverError.message };
   }
 
   revalidatePath('/');
   redirect(`/dashboard/${session?.sub}`);
 }
 
-export async function cancelReserve(reserve_id, prevState) {
+export async function cancelReserve(pathname, reserve_id, prevState) {
+  const callbackUrl = `callbackUrl=${pathname}`;
+
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(`/login/?${callbackUrl}`);
 
   const token = cookies().get('session')?.value;
 
@@ -58,6 +64,7 @@ export async function cancelReserve(reserve_id, prevState) {
     }
   } catch (error) {
     console.log('Could not cancel reserve');
+    return { error: serverError.message };
   }
 
   revalidatePath(`/dashboard/${session?.sub}`);

@@ -4,12 +4,15 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { getSession } from './sessionActions';
+import { serverError } from '../../../backend/src/errors';
 
 const baseURL = `http://localhost:8000/houses`;
 
-export async function createEstate(prevState, formData) {
+export async function createEstate(pathname, prevState, formData) {
+  const callbackUrl = `callbackUrl=${pathname}`;
+
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(`/login?${callbackUrl}`);
 
   const token = cookies().get('session')?.value;
 
@@ -29,6 +32,7 @@ export async function createEstate(prevState, formData) {
     }
   } catch (error) {
     console.log('Could not create estate');
+    return { error: serverError.message };
   }
 
   revalidatePath(`/dashboard/${session?.sub}`);
@@ -49,6 +53,7 @@ export async function fetchEstate(estate_id) {
     }
   } catch (error) {
     console.log('Could not fetch estate');
+    return { error: serverError.message };
   }
 
   return estate;
@@ -76,6 +81,7 @@ export async function fetchEstates(
     }
   } catch (err) {
     console.log('Could not fetch estates');
+    return [];
   }
 
   revalidatePath(`/`);
@@ -83,9 +89,11 @@ export async function fetchEstates(
   return estates;
 }
 
-export async function updateEstate(prevState, formData) {
+export async function updateEstate(pathname, prevState, formData) {
+  const callbackUrl = `callbackUrl=${pathname}`;
+
   const session = await getSession();
-  if (!session) redirect('/login');
+  if (!session) redirect(`/login?${callbackUrl}`);
 
   const token = cookies().get('session')?.value;
 
@@ -105,6 +113,7 @@ export async function updateEstate(prevState, formData) {
     }
   } catch (error) {
     console.log('Could not update estate');
+    return { error: serverError.message };
   }
 
   revalidatePath(`/dashboard/${session?.sub}`);
@@ -129,6 +138,7 @@ export async function deleteEstate(estate_id) {
     }
   } catch (error) {
     console.log('Could not delete estate');
+    return { error: serverError.message };
   }
 
   revalidatePath(`/dashboard/${session?.sub}`);

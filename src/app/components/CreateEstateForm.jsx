@@ -4,8 +4,11 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { createEstate } from '@/app/lib/estateActions';
+import { usePathname } from 'next/navigation';
 
 export default function CreateEstateForm() {
+  const pathname = usePathname();
+
   const initialState = {
     error: null,
   };
@@ -18,7 +21,12 @@ export default function CreateEstateForm() {
     available: true,
   };
 
-  const [createEstateState, createEstateAction] = useFormState(createEstate, initialState);
+  const createEstateWithPathname = createEstate.bind(null, pathname);
+
+  const [createEstateState, createEstateAction] = useFormState(
+    createEstateWithPathname,
+    initialState
+  );
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (
@@ -81,7 +89,7 @@ export default function CreateEstateForm() {
           onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
           required
         />
-  
+
         <div>
           <h1>Estate available for rental?</h1>
           <label htmlFor='estate-available'>

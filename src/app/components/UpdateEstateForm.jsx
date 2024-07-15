@@ -4,8 +4,11 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useFormState } from 'react-dom';
 import { updateEstate } from '@/app/lib/estateActions';
+import { usePathname } from 'next/navigation';
 
 export default function UpdateEstateForm({ estate }) {
+  const pathname = usePathname();
+
   const initialErrorState = {
     error: null,
   };
@@ -17,7 +20,12 @@ export default function UpdateEstateForm({ estate }) {
     image: null,
   };
 
-  const [updateEstateState, updateEstateAction] = useFormState(updateEstate, initialErrorState);
+  const updateStateWithPathname = updateEstate.bind(null, pathname);
+
+  const [updateEstateState, updateEstateAction] = useFormState(
+    updateStateWithPathname,
+    initialErrorState
+  );
   const [formFields, setFormFields] = useState(initialFormFields);
 
   return (

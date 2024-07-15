@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    // serverComponentsExternalPackages: ['bcrypt'],
+    serverActions: {
+      bodySizeLimit: '25MB',
+    },
   },
 };
 

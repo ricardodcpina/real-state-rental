@@ -1,41 +1,13 @@
-const fs = require('fs');
-const path = require('path');
 const { isValidObjectId } = require('mongoose');
-const { validateFields } = require('../utils/utils');
 
 const { House, Reserve } = require('../models');
-
 const errors = require('../errors');
 
-////////////////////////  AUXILIARY FUNCTIONS  /////////////////////////
-
-// NEEDS TO BE INCLUDED IN TESTS!
-const deletePreviousEstateImage = (estateImage) => {
-  const imagePath = path.resolve(__dirname, '..', '..', '..', 'public', 'images', estateImage);
-
-  fs.unlink(imagePath, (err) => {
-    if (err) console.log(err);
-    else {
-      console.log('Last image file deleted with success');
-    }
-  });
-};
-
-// NEEDS TO BE INCLUDED IN TESTS!
-const validateFile = (file) => {
-  if (!file) {
-    throw errors.fileRequired;
-  }
-};
-
-////////////////////////  MAIN FUNCTIONS  //////////////////////////////
+const { validateFields, deletePreviousEstateImage } = require('../utils/utils');
 
 exports.createHouse = async (userId, filename, description, location, price, available) => {
   // Validate required fields
   validateFields({ description, price, location, available });
-
-  // Validate file input
-  validateFile(filename);
 
   // Save house on database
   const house = await House.create({

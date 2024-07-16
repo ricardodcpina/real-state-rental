@@ -1,10 +1,11 @@
 require('dotenv').config();
 
+const fs = require('fs');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const { SignJWT, jwtVerify } = require('jose');
 
 const { User } = require('../models');
-
 const errors = require('../errors');
 
 const key = new TextEncoder().encode(process.env.HASH_SECRET);
@@ -59,4 +60,16 @@ exports.verifyToken = async (token) => {
   const { payload } = await jwtVerify(token, key, { algorithms: ['HS256'] });
 
   return payload;
+};
+
+exports.deletePreviousEstateImage = (estateImage) => {
+  const imagePath = path.resolve(__dirname, '..', '..', '..', 'public', 'images', estateImage);
+
+  fs.unlink(imagePath, (err) => {
+    if (err) {
+      console.log(`File ${estateImage} not deleted`);
+    } else {
+      console.log(`File ${estateImage} deleted with success`);
+    }
+  });
 };

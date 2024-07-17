@@ -1,9 +1,15 @@
 const multer = require('multer');
 const path = require('path');
 
+const errors = require('../errors');
+
 module.exports = {
   fileFilter: (req, file, cb) => {
-    cb(null, file.originalname !== 'undefined');
+    if (file.originalname !== undefined) {
+      cb(null, true);
+    } else {
+      cb(errors.fileRequired);
+    }
   },
   storage: multer.diskStorage({
     destination: path.resolve(__dirname, '..', '..', '..', 'public', 'images'),
@@ -15,3 +21,4 @@ module.exports = {
     },
   }),
 };
+

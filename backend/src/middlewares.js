@@ -5,8 +5,8 @@ const { verifyToken } = require('./utils/utils');
 
 exports.authentication = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  let statusCode = notAuthenticated.statusCode;
-  let message = notAuthenticated.message;
+  const statusCode = notAuthenticated.statusCode;
+  const message = notAuthenticated.message;
 
   if (!authHeader) {
     return res.status(statusCode).json({ error: message });

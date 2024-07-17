@@ -1,6 +1,3 @@
-require('dotenv').config();
-const PORT = process.env.PORT || 8000;
-
 const { Schema, model } = require('mongoose');
 
 const UserSchema = new Schema({

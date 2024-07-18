@@ -5,10 +5,10 @@ const errors = require('../errors');
 
 module.exports = {
   fileFilter: (req, file, cb) => {
-    if (file.originalname !== undefined) {
+    if (file.originalname !== 'undefined') {
       cb(null, true);
     } else {
-      cb(errors.fileRequired);
+      cb(null, false);
     }
   },
   storage: multer.diskStorage({
@@ -21,4 +21,3 @@ module.exports = {
     },
   }),
 };
-

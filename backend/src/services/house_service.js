@@ -9,6 +9,9 @@ exports.createHouse = async (userId, filename, description, location, price, ava
   // Validate required fields
   validateFields({ description, price, location, available });
 
+  // Validate if image file exists
+  if (!filename) throw errors.fileRequired;
+
   // Save house on database
   const house = await House.create({
     user: userId,

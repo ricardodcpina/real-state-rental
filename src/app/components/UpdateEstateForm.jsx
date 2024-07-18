@@ -51,11 +51,11 @@ export default function UpdateEstateForm({ estate }) {
           name='thumbnail'
           type='file'
           accept='.jpg, .jpeg, .png'
-          value=''
           onChange={(e) =>
             setFormFields({
               ...formFields,
-              image: URL.createObjectURL(e.target.files[0]),
+              image:
+                (e.target.files[0] && URL.createObjectURL(e.target.files[0])) || formFields.image,
             })
           }
           hidden

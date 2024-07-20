@@ -163,3 +163,5 @@ This should run the MongoDB docker image on port 27017, the app server on port 3
 
 ## Next steps
 
+- Gradually migrate to TypeScript
+- Implement integration tests

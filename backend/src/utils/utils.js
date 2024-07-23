@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 
 const fs = require('fs');
 const path = require('path');
@@ -54,6 +54,12 @@ exports.generateToken = async (userId) => {
     .sign(key);
 
   return token;
+};
+
+exports.generateSALT = async () => {
+  const salt = bcrypt.genSalt();
+
+  return salt;
 };
 
 exports.verifyToken = async (token) => {

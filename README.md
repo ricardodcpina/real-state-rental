@@ -56,6 +56,8 @@ Infra-structure is provided by Docker Compose. The compose.yaml file runs an ima
 
 #### Environment variables
 
+The application contains three different environments: development, production and test.
+
 - MONGO_URL - connection string for database
 - SALT - password hashing and safe keeping on database
 - HASH_SECRET - secret for JWT tokens
@@ -64,6 +66,7 @@ Infra-structure is provided by Docker Compose. The compose.yaml file runs an ima
 
 - RESTfull API architecture
 - MVC and services patterns
+- Environment variables
 - Middlewares
 - CRUD operations
 - ORM database connection
@@ -115,13 +118,22 @@ This should run the MongoDB docker image on port 27017, the app docker image on 
 
 4 - Access the application via URL http://localhost:3000
 
-#### Via Node.js 
+#### Via Node.js
 
 1 - First make sure Node.js is installed in your machine: https://nodejs.org/en/download/package-manager
 
-2 - Fork and clone the application
+2 - Fork and clone the application.
 
-3 - Run the following terminal command inside the root directory of the application after cloning it from GitHub.
+3 - Create a .env.development file at the root directory.
+
+Copy and paste this on .env.development file (default variables when running from docker compose):
+```bash
+  MONGO_URL=mongodb://mongo:27017/real-state-rental
+  SALT=$2b$10$4qgHHvn7eqz4F7VOPvaSIe
+  HASH_SECRET=08b9a769-e2bc-46fa-9f10-7962804ecee8
+```
+
+4 - Run the following terminal command inside the root directory of the application.
 
 ```bash
 npm run dev

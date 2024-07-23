@@ -74,6 +74,7 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
                   id='reserve-date'
                   type='date'
                   className='rounded-md text-center ml-3'
+                  min='2024-07-23'
                   required
                 />
 

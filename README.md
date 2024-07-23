@@ -98,17 +98,19 @@ The application contains three different environments: development, production a
 
 ## Getting Started
 
-You can either run the app from Docker Compose or run the development server directly if Node.js is installed.
+You can either run the app from Docker Compose or run the development server directly with Node.js. 
 
-### Installation
+Regardless of which, you'll need Docker installed in your machine: https://docs.docker.com/get-docker/
 
-#### Via Docker Compose
+And if you wish to run with Node.js locally, you'll need Node installed: https://nodejs.org/en/download/package-manager
 
-1 - First make sure Docker is installed in your machine: https://docs.docker.com/get-docker/
+Note: for Windows OS, I recommend using WSL for docker commands.
 
-2 - Fork and clone the application
+#### Running from container with Docker Compose
 
-3 - Run the following terminal command inside the root directory of the application after cloning it from GitHub.
+1 - Fork and clone the application
+
+2 - Run the following terminal command inside the root directory of the application after cloning it from GitHub.
 
 ```bash
 docker compose up -d
@@ -118,36 +120,40 @@ This should run the MongoDB docker image on port 27017, the app docker image on 
 
 4 - Access the application via URL http://localhost:3000
 
-#### Via Node.js
+#### Running from Node.js local server
 
-1 - First make sure Node.js is installed in your machine: https://nodejs.org/en/download/package-manager
+1 - Fork and clone the application.
 
-2 - Fork and clone the application.
+2 - Run terminal command to install dependencies: 
 
-3 - Create a .env.development file at the root directory.
-
-Copy and paste this on .env.development file (default variables when running from docker compose):
 ```bash
-  MONGO_URL=mongodb://mongo:27017/real-state-rental
-  SALT=$2b$10$4qgHHvn7eqz4F7VOPvaSIe
-  HASH_SECRET=08b9a769-e2bc-46fa-9f10-7962804ecee8
+npm install
 ```
 
-4 - Run the following terminal command inside the root directory of the application.
+3 - Run the following terminal command to set up MongoDB database image on Docker: 
+
+```bash
+docker run --name real-estate-rental -p 27017:27017 -d mongo:latest
+```
+
+4 - Create a .env.development file at the root directory.
+
+Copy and paste these default values on .env.development file:
+```bash
+MONGO_URL=mongodb://localhost:27017/real-state-rental
+HASH_SECRET=08b9a769-e2bc-46fa-9f10-7962804ecee8
+SALT=$2b$10$4qgHHvn7eqz4F7VOPvaSIe
+```
+
+4 - Run the following terminal command inside the root directory of the application to start development server.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 This should run the MongoDB docker image on port 27017, the app server on port 3000 and the back-end server on port 8000.
 
-4 - Access the application via URL http://localhost:3000
+5 - Access the application via URL http://localhost:3000
 
 ### Application usage
 

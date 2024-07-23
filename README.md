@@ -106,7 +106,7 @@ And if you wish to run with Node.js locally, you'll need Node installed: https:/
 
 Note: for Windows OS, I recommend using WSL for docker commands.
 
-#### Running from container with Docker Compose
+### Running from container with Docker Compose
 
 1 - Fork and clone the application
 
@@ -120,7 +120,7 @@ This should run the MongoDB docker image on port 27017, the app docker image on 
 
 4 - Access the application via URL http://localhost:3000
 
-#### Running from Node.js local server
+### Running from Node.js local server
 
 1 - Fork and clone the application.
 

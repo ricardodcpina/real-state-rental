@@ -12,6 +12,10 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
     error: null,
   };
 
+  const actualDate = new Date();
+  const formattedDate = actualDate.toISOString().split('T')[0];
+  console.log(formattedDate);
+
   const cancelReserveWithIdAndPathname = cancelReserve.bind(null, pathname, reserve_id);
   const reserveEstateWithPathname = reserveEstate.bind(null, pathname);
 
@@ -74,7 +78,7 @@ export default function ReserveEstateForm({ estate, user_id, reserve_id }) {
                   id='reserve-date'
                   type='date'
                   className='rounded-md text-center ml-3'
-                  min='2024-07-23'
+                  min={formattedDate}
                   required
                 />
 

@@ -3,6 +3,7 @@ const router = express.Router();
 
 const userService = require('../services/user_service');
 const { authentication } = require('../middlewares');
+const { generateSALT } = require('../utils/utils');
 
 router.post('/', async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -40,7 +41,7 @@ router.put('/:id', authentication, async (req, res, next) => {
 });
 
 router.get('/salt', async (req, res, next) => {
-  const SALT = await userService.generateSALT();
+  const SALT = await generateSALT();
 
   res.status(200).json({ SALT: SALT });
 });

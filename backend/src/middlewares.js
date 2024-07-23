@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 const { notAuthenticated, serverError } = require('./errors');
 const { verifyToken } = require('./utils/utils');
 

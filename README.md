@@ -17,7 +17,7 @@ This is a Node.js full-stack application built with Next.js framework.
 Back-end was already a separated work-in-progress app when I've decided to integrate it with Next.js, so I chose to connect both of them instead of building the backend directly inside Next.js provided structure.
 
 - Located inside backend folder at root directory.
-- Architecture is based on MVC and services
+- REST API based on MVC and services
 - Model layer consists of three schemas : User, House, Reserve
 - Middlewares implemented for JWT authentication/authorization and handling errors.
 - File upload feature provided for House images.

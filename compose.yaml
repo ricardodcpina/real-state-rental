@@ -6,7 +6,7 @@ services:
       - 27017:27017
 
   app:
-    image: ricardodcpina/real-estate-rental
+    build: .
     ports:
       - 3000:3000
     environment:

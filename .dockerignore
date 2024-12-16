@@ -3,3 +3,6 @@ public/images
 coverage
 
 .env*
+
+compose.yaml
+Dockerfile

@@ -7,8 +7,8 @@
     "dev-frontend": "next dev",
     "dev": "npm-run-all --parallel dev-backend dev-frontend",
     "build": "next build",
-    "start-backend": "cross-env NODE_ENV=production node backend/src/server.js",
-    "start-frontend": "next start",
+    "start-backend": "cross-env NODE_ENV=production node backend/src/server.js -p 8000",
+    "start-frontend": "next start -p 3000",
     "start": "npm-run-all --parallel start-backend start-frontend",
     "lint": "next lint",
     "test": "jest"

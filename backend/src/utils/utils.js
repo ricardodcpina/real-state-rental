@@ -50,7 +50,7 @@ exports.generateToken = async (userId) => {
   const token = await new SignJWT({ sub: userId })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('60s')
+    .setExpirationTime('600s')
     .sign(key);
 
   return token;

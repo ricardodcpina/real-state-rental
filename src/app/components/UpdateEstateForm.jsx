@@ -6,6 +6,8 @@ import { useFormState } from 'react-dom';
 import { updateEstate } from '@/app/lib/estateActions';
 import { usePathname } from 'next/navigation';
 
+const uploadsURL = 'http://localhost:8000/uploads';
+
 export default function UpdateEstateForm({ estate }) {
   const pathname = usePathname();
 
@@ -34,7 +36,9 @@ export default function UpdateEstateForm({ estate }) {
         <h1 className='text-2xl mb-4'>Edit Estate</h1>
 
         <Image
-          src={formFields.image || `/images/${estate.thumbnail}`}
+          src={
+            formFields.image || `${uploadsURL}/${estate.thumbnail}`
+          }
           width={400}
           height={500}
           alt='Picture of estate'
@@ -55,7 +59,9 @@ export default function UpdateEstateForm({ estate }) {
             setFormFields({
               ...formFields,
               image:
-                (e.target.files[0] && URL.createObjectURL(e.target.files[0])) || formFields.image,
+                (e.target.files[0] &&
+                  URL.createObjectURL(e.target.files[0])) ||
+                formFields.image,
             })
           }
           hidden
@@ -70,7 +76,12 @@ export default function UpdateEstateForm({ estate }) {
           maxLength='12'
           value={formFields.description}
           required
-          onChange={(e) => setFormFields({ ...formFields, description: e.target.value })}
+          onChange={(e) =>
+            setFormFields({
+              ...formFields,
+              description: e.target.value,
+            })
+          }
         />
 
         <label htmlFor='estate-location'>Location</label>
@@ -81,7 +92,9 @@ export default function UpdateEstateForm({ estate }) {
           type='text'
           value={formFields.location}
           required
-          onChange={(e) => setFormFields({ ...formFields, location: e.target.value })}
+          onChange={(e) =>
+            setFormFields({ ...formFields, location: e.target.value })
+          }
         />
 
         <label htmlFor='estate-price'>Price in USD</label>
@@ -92,10 +105,17 @@ export default function UpdateEstateForm({ estate }) {
           type='number'
           value={formFields.price}
           required
-          onChange={(e) => setFormFields({ ...formFields, price: e.target.value })}
+          onChange={(e) =>
+            setFormFields({ ...formFields, price: e.target.value })
+          }
         />
 
-        <input id='estate-id' name='estate-id' type='hidden' value={estate._id} />
+        <input
+          id='estate-id'
+          name='estate-id'
+          type='hidden'
+          value={estate._id}
+        />
 
         <div className='mb-2'>
           <h1>Estate available for rental?</h1>
@@ -123,7 +143,9 @@ export default function UpdateEstateForm({ estate }) {
           </label>
         </div>
         {updateEstateState?.error && (
-          <h1 className='text-red-600 mb-3'>{updateEstateState.error}</h1>
+          <h1 className='text-red-600 mb-3'>
+            {updateEstateState.error}
+          </h1>
         )}
         <div className='flex justify-end'>
           <button

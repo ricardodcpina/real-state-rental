@@ -2,6 +2,8 @@ import Paginator from './Paginator';
 import HouseCard from './HouseCard';
 import { fetchEstates } from '@/app/lib/estateActions';
 
+const uploadsURL = 'http://localhost:8000/uploads'
+
 export default async function Container({ currentPage, maxCost, estateLocation, estateName }) {
   const pageLimit = 10;
 
@@ -29,7 +31,7 @@ export default async function Container({ currentPage, maxCost, estateLocation, 
             <HouseCard
               key={estate._id}
               name={estate.description}
-              src={`/images/${estate.thumbnail}`}
+              src={`${uploadsURL}/${estate.thumbnail}`}
               estate_id={estate._id}
               estate_price={estate.price}
             />

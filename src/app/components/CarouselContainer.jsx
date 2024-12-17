@@ -4,6 +4,8 @@ import HouseCard from './HouseCard';
 import Link from 'next/link';
 import Paginator from './Paginator';
 
+const uploadsURL = 'http://localhost:8000/uploads'
+
 export default async function CarouselContainer({ user_id, description, currentPage }) {
   let estates = null;
   let reserves = null;
@@ -46,7 +48,7 @@ export default async function CarouselContainer({ user_id, description, currentP
             estates.map((estate) => (
               <HouseCard
                 key={estate._id}
-                src={`/images/${estate.thumbnail}`}
+                src={`${uploadsURL}/${estate.thumbnail}`}
                 name={estate.description}
                 estate_id={estate._id}
                 user_id={user_id}
@@ -56,7 +58,7 @@ export default async function CarouselContainer({ user_id, description, currentP
             reserves.map((reserve) => (
               <HouseCard
                 key={reserve._id}
-                src={`/images/${reserve.house.thumbnail}`}
+                src={`${uploadsURL}/${reserve.house.thumbnail}`}
                 name={reserve.house.description}
                 reserve_date={reserve.date}
                 estate_id={reserve.house._id}

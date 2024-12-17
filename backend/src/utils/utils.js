@@ -69,7 +69,7 @@ exports.verifyToken = async (token) => {
 };
 
 exports.deletePreviousEstateImage = (estateImage) => {
-  const imagePath = path.resolve(__dirname, '..', '..', '..', 'public', 'images', estateImage);
+  const imagePath = path.resolve(__dirname, '..', '..', '..', 'uploads', estateImage);
   fs.unlink(imagePath, (err) => {
     if (err) {
       console.log(`File ${estateImage} not deleted`);

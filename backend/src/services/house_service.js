@@ -81,7 +81,7 @@ exports.updateHouse = async (userId, houseId, input, filename) => {
   // Validate provided fields
   validateFields(input);
 
-  // Deletes image file from public folder if new one is provided
+  // Deletes image file from uploads folder if new one is provided
   if (filename) {
     deletePreviousEstateImage(house.thumbnail);
   }
@@ -109,7 +109,7 @@ exports.deleteHouse = async (userId, houseId) => {
     throw errors.notAllowed;
   }
 
-  // Deletes image file from public folder
+  // Deletes image file from uploads folder
   deletePreviousEstateImage(house.thumbnail);
 
   // Deletes associated reserve from database if any
